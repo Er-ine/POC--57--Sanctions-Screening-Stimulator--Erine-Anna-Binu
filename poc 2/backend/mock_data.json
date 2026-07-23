@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "project": "Real Rails Intelligence — POC 43",
+    "title": "Stroke Care Network Response Analyser",
+    "rail": "Neurological Emergency Care",
+    "author": "George S Kakkassery",
+    "data_label": "SYNTHETIC — for demonstration purposes only. All patient data is artificially generated.",
+    "version": "1.0.0"
+  },
+  "hospitals": [
+    {"id":"h001","name":"King Faisal Specialist Hospital","city":"Riyadh","country":"Saudi Arabia","region":"saudi","lat":24.6877,"lng":46.7219,"stroke_unit_beds_total":24,"stroke_unit_beds_available":8,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":892,"avg_door_to_needle_min":52,"thrombolysis_rate_pct":18.5,"angels_status":"gold","mrs_outcomes":{"0":71,"1":134,"2":178,"3":196,"4":161,"5":98,"6":54}},
+    {"id":"h002","name":"King Abdulaziz Medical City","city":"Riyadh","country":"Saudi Arabia","region":"saudi","lat":24.7136,"lng":46.6248,"stroke_unit_beds_total":18,"stroke_unit_beds_available":5,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":745,"avg_door_to_needle_min":58,"thrombolysis_rate_pct":15.8,"angels_status":"silver","mrs_outcomes":{"0":59,"1":112,"2":149,"3":164,"4":134,"5":82,"6":45}},
+    {"id":"h003","name":"King Fahad Medical City","city":"Riyadh","country":"Saudi Arabia","region":"saudi","lat":24.6255,"lng":46.7149,"stroke_unit_beds_total":16,"stroke_unit_beds_available":4,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":680,"avg_door_to_needle_min":65,"thrombolysis_rate_pct":13.2,"angels_status":"silver","mrs_outcomes":{"0":54,"1":102,"2":136,"3":150,"4":122,"5":75,"6":41}},
+    {"id":"h004","name":"King Abdullah Medical City","city":"Makkah","country":"Saudi Arabia","region":"saudi","lat":21.3891,"lng":39.8579,"stroke_unit_beds_total":10,"stroke_unit_beds_available":3,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":520,"avg_door_to_needle_min":78,"thrombolysis_rate_pct":9.8,"angels_status":"bronze","mrs_outcomes":{"0":36,"1":68,"2":94,"3":120,"4":104,"5":62,"6":36}},
+    {"id":"h005","name":"King Fahad University Hospital","city":"Khobar","country":"Saudi Arabia","region":"saudi","lat":26.2172,"lng":50.1971,"stroke_unit_beds_total":12,"stroke_unit_beds_available":4,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":610,"avg_door_to_needle_min":62,"thrombolysis_rate_pct":14.5,"angels_status":"silver","mrs_outcomes":{"0":48,"1":92,"2":122,"3":134,"4":110,"5":67,"6":37}},
+    {"id":"h006","name":"Prince Sultan Military Medical City","city":"Riyadh","country":"Saudi Arabia","region":"saudi","lat":24.7003,"lng":46.6723,"stroke_unit_beds_total":14,"stroke_unit_beds_available":3,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":580,"avg_door_to_needle_min":71,"thrombolysis_rate_pct":11.9,"angels_status":"bronze","mrs_outcomes":{"0":40,"1":78,"2":110,"3":134,"4":110,"5":69,"6":39}},
+    {"id":"h007","name":"Madinah General Hospital","city":"Madinah","country":"Saudi Arabia","region":"saudi","lat":24.4672,"lng":39.6024,"stroke_unit_beds_total":8,"stroke_unit_beds_available":2,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":380,"avg_door_to_needle_min":85,"thrombolysis_rate_pct":8.1,"angels_status":"none","mrs_outcomes":{"0":23,"1":46,"2":65,"3":91,"4":80,"5":49,"6":26}},
+    {"id":"h008","name":"Aseer Central Hospital","city":"Abha","country":"Saudi Arabia","region":"saudi","lat":18.2164,"lng":42.5053,"stroke_unit_beds_total":6,"stroke_unit_beds_available":2,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":290,"avg_door_to_needle_min":92,"thrombolysis_rate_pct":6.5,"angels_status":"none","mrs_outcomes":{"0":17,"1":33,"2":49,"3":72,"4":64,"5":37,"6":18}},
+    {"id":"h009","name":"Cleveland Clinic Abu Dhabi","city":"Abu Dhabi","country":"UAE","region":"uae","lat":24.4539,"lng":54.6103,"stroke_unit_beds_total":20,"stroke_unit_beds_available":7,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":420,"avg_door_to_needle_min":45,"thrombolysis_rate_pct":22.3,"angels_status":"gold","mrs_outcomes":{"0":42,"1":76,"2":92,"3":88,"4":63,"5":38,"6":21}},
+    {"id":"h010","name":"Rashid Hospital","city":"Dubai","country":"UAE","region":"uae","lat":25.2346,"lng":55.3086,"stroke_unit_beds_total":22,"stroke_unit_beds_available":6,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":780,"avg_door_to_needle_min":48,"thrombolysis_rate_pct":20.1,"angels_status":"gold","mrs_outcomes":{"0":70,"1":128,"2":163,"3":163,"4":117,"5":85,"6":54}},
+    {"id":"h011","name":"Sheikh Khalifa Medical City","city":"Abu Dhabi","country":"UAE","region":"uae","lat":24.4669,"lng":54.3666,"stroke_unit_beds_total":16,"stroke_unit_beds_available":5,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":510,"avg_door_to_needle_min":55,"thrombolysis_rate_pct":17.2,"angels_status":"silver","mrs_outcomes":{"0":41,"1":77,"2":102,"3":112,"4":92,"5":56,"6":30}},
+    {"id":"h012","name":"Al Qassimi Hospital","city":"Sharjah","country":"UAE","region":"uae","lat":25.3463,"lng":55.4209,"stroke_unit_beds_total":10,"stroke_unit_beds_available":3,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":340,"avg_door_to_needle_min":72,"thrombolysis_rate_pct":10.5,"angels_status":"bronze","mrs_outcomes":{"0":24,"1":44,"2":61,"3":82,"4":68,"5":41,"6":20}},
+    {"id":"h013","name":"Tawam Hospital","city":"Al Ain","country":"UAE","region":"uae","lat":24.2075,"lng":55.7447,"stroke_unit_beds_total":8,"stroke_unit_beds_available":2,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":280,"avg_door_to_needle_min":82,"thrombolysis_rate_pct":8.8,"angels_status":"none","mrs_outcomes":{"0":17,"1":34,"2":48,"3":67,"4":56,"5":37,"6":21}},
+    {"id":"h014","name":"Hamad General Hospital","city":"Doha","country":"Qatar","region":"qatar_plus","lat":25.2940,"lng":51.4461,"stroke_unit_beds_total":24,"stroke_unit_beds_available":8,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":650,"avg_door_to_needle_min":42,"thrombolysis_rate_pct":24.5,"angels_status":"gold","mrs_outcomes":{"0":59,"1":107,"2":137,"3":130,"4":98,"5":72,"6":47}},
+    {"id":"h015","name":"HMC Neuroscience Institute","city":"Doha","country":"Qatar","region":"qatar_plus","lat":25.3014,"lng":51.4392,"stroke_unit_beds_total":18,"stroke_unit_beds_available":6,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":420,"avg_door_to_needle_min":38,"thrombolysis_rate_pct":28.1,"angels_status":"gold","mrs_outcomes":{"0":42,"1":76,"2":92,"3":84,"4":63,"5":42,"6":21}},
+    {"id":"h016","name":"Mubarak Al-Kabeer Hospital","city":"Kuwait City","country":"Kuwait","region":"qatar_plus","lat":29.3003,"lng":48.0614,"stroke_unit_beds_total":14,"stroke_unit_beds_available":4,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":480,"avg_door_to_needle_min":68,"thrombolysis_rate_pct":12.8,"angels_status":"silver","mrs_outcomes":{"0":34,"1":67,"2":91,"3":110,"4":91,"5":55,"6":32}},
+    {"id":"h017","name":"Ibn Sina Hospital","city":"Kuwait City","country":"Kuwait","region":"qatar_plus","lat":29.3358,"lng":47.9952,"stroke_unit_beds_total":10,"stroke_unit_beds_available":3,"has_thrombolysis":true,"has_thrombectomy":false,"annual_stroke_volume":350,"avg_door_to_needle_min":75,"thrombolysis_rate_pct":10.2,"angels_status":"bronze","mrs_outcomes":{"0":25,"1":46,"2":63,"3":84,"4":70,"5":41,"6":21}},
+    {"id":"h018","name":"Royal Hospital","city":"Muscat","country":"Oman","region":"qatar_plus","lat":23.5880,"lng":58.3829,"stroke_unit_beds_total":12,"stroke_unit_beds_available":4,"has_thrombolysis":true,"has_thrombectomy":true,"annual_stroke_volume":390,"avg_door_to_needle_min":70,"thrombolysis_rate_pct":11.5,"angels_status":"silver","mrs_outcomes":{"0":28,"1":54,"2":74,"3":90,"4":74,"5":46,"6":24}}
+  ],
+  "scenarios": [
+    {
+      "id": "full_network",
+      "name": "Full Network Analysis",
+      "description": "Analysis of all 18 hospitals across the Gulf region."
+    },
+    {
+      "id": "saudi_region",
+      "name": "Saudi Arabia Network",
+      "description": "Analysis of stroke centers within Saudi Arabia."
+    },
+    {
+      "id": "uae_region",
+      "name": "UAE Network",
+      "description": "Analysis of stroke centers within the United Arab Emirates."
+    },
+    {
+      "id": "critical_gaps",
+      "name": "Critical Performance Gaps",
+      "description": "Hospitals failing the 60-minute door-to-needle target."
+    }
+  ],
+  "dtn_distribution": [
+    {"range":"0–15","min":0,"max":15,"count":45,"color":"#22C55E"},
+    {"range":"15–30","min":15,"max":30,"count":120,"color":"#22C55E"},
+    {"range":"30–45","min":30,"max":45,"count":285,"color":"#22C55E"},
+    {"range":"45–60","min":45,"max":60,"count":510,"color":"#38BDF8"},
+    {"range":"60–75","min":60,"max":75,"count":620,"color":"#F59E0B"},
+    {"range":"75–90","min":75,"max":90,"count":430,"color":"#F59E0B"},
+    {"range":"90–120","min":90,"max":120,"count":310,"color":"#EF4444"},
+    {"range":"120+","min":120,"max":999,"count":150,"color":"#EF4444"}
+  ],
+  "thrombolysis_trend": [
+    {"month": "2024-01", "rate": 11.2, "cases_treated": 140},
+    {"month": "2024-02", "rate": 11.3, "cases_treated": 142},
+    {"month": "2024-03", "rate": 11.5, "cases_treated": 144},
+    {"month": "2024-04", "rate": 11.6, "cases_treated": 146},
+    {"month": "2024-05", "rate": 11.7, "cases_treated": 148},
+    {"month": "2024-06", "rate": 11.9, "cases_treated": 150},
+    {"month": "2024-07", "rate": 12.0, "cases_treated": 152},
+    {"month": "2024-08", "rate": 12.2, "cases_treated": 154},
+    {"month": "2024-09", "rate": 12.3, "cases_treated": 155},
+    {"month": "2024-10", "rate": 12.4, "cases_treated": 157},
+    {"month": "2024-11", "rate": 12.5, "cases_treated": 158},
+    {"month": "2024-12", "rate": 12.7, "cases_treated": 160},
+    {"month": "2025-01", "rate": 12.8, "cases_treated": 162},
+    {"month": "2025-02", "rate": 13.0, "cases_treated": 164},
+    {"month": "2025-03", "rate": 13.1, "cases_treated": 166},
+    {"month": "2025-04", "rate": 13.2, "cases_treated": 167},
+    {"month": "2025-05", "rate": 13.4, "cases_treated": 169},
+    {"month": "2025-06", "rate": 13.5, "cases_treated": 171},
+    {"month": "2025-07", "rate": 13.7, "cases_treated": 173},
+    {"month": "2025-08", "rate": 13.8, "cases_treated": 175},
+    {"month": "2025-09", "rate": 13.9, "cases_treated": 176},
+    {"month": "2025-10", "rate": 14.0, "cases_treated": 178},
+    {"month": "2025-11", "rate": 14.1, "cases_treated": 179},
+    {"month": "2025-12", "rate": 14.2, "cases_treated": 180}
+  ],
+  "outcome_distribution": [
+    {"mrs":0,"label":"No symptoms","count":680,"pct":7.9,"color":"#22C55E"},
+    {"mrs":1,"label":"No significant disability","count":1290,"pct":15.0,"color":"#4ADE80"},
+    {"mrs":2,"label":"Slight disability","count":1718,"pct":20.0,"color":"#38BDF8"},
+    {"mrs":3,"label":"Moderate disability","count":1891,"pct":22.0,"color":"#818CF8"},
+    {"mrs":4,"label":"Moderately severe disability","count":1545,"pct":18.0,"color":"#F59E0B"},
+    {"mrs":5,"label":"Severe disability","count":951,"pct":11.1,"color":"#EF4444"},
+    {"mrs":6,"label":"Dead","count":525,"pct":6.1,"color":"#991B1B"}
+  ],
+  "impact_chain": {
+    "stages":[
+      {"id":1,"stage":"Symptom Onset","icon":"brain","avg_time_min":0,"cumulative_min":0,"description":"Patient or bystander recognises stroke signs (FAST: Face drooping, Arm weakness, Speech difficulty, Time to call)","status":"start"},
+      {"id":2,"stage":"EMS Call","icon":"phone","avg_time_min":15,"cumulative_min":15,"description":"Emergency services contacted — average 15-minute delay from onset to call in Gulf region","status":"warning"},
+      {"id":3,"stage":"EMS Dispatch","icon":"siren","avg_time_min":8,"cumulative_min":23,"description":"Ambulance dispatched and en route to patient location","status":"active"},
+      {"id":4,"stage":"Hospital Arrival","icon":"hospital","avg_time_min":22,"cumulative_min":45,"description":"Patient arrives at stroke-capable hospital — door time starts","status":"active"},
+      {"id":5,"stage":"Triage & CT Scan","icon":"scan","avg_time_min":18,"cumulative_min":63,"description":"Initial neurological assessment, NIHSS scoring, and brain CT imaging to rule out haemorrhagic stroke","status":"critical"},
+      {"id":6,"stage":"Clinical Decision","icon":"clipboard","avg_time_min":12,"cumulative_min":75,"description":"Stroke team confirms thrombolysis eligibility — contraindications checked","status":"critical"},
+      {"id":7,"stage":"Thrombolysis (tPA)","icon":"syringe","avg_time_min":5,"cumulative_min":80,"description":"Alteplase (tPA) administered intravenously — door-to-needle target is ≤60 minutes","status":"target"},
+      {"id":8,"stage":"Post-Treatment","icon":"heart-pulse","avg_time_min":0,"cumulative_min":80,"description":"Stroke unit admission, 24-hour monitoring, rehabilitation planning. 90-day mRS outcome measured.","status":"end"}
+    ]
+  },
+  "source_confidence": [
+    {"source":"Angels Initiative Gulf Network","confidence_pct":90,"type":"registry","description":"ESO Angels Initiative hospital performance data for stroke treatment quality benchmarking"},
+    {"source":"WHO Stroke Surveillance","confidence_pct":88,"type":"guidance","description":"WHO global and EMRO regional stroke surveillance and prevention guidelines"},
+    {"source":"OECD Stroke Care Indicators","confidence_pct":85,"type":"benchmark","description":"OECD health system performance indicators for acute stroke care across member nations"},
+    {"source":"Saudi Stroke Society","confidence_pct":82,"type":"registry","description":"Saudi Stroke Society clinical reports and national stroke registry data"},
+    {"source":"Synthetic Intelligence Model","confidence_pct":60,"type":"model","description":"AI-generated synthetic data enrichment for demonstration — clearly labeled per Manifesto"}
+  ]
+}

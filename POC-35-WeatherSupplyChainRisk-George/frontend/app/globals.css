@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-obsidian: #030712;
+  --color-brand-navy: #0B1117;
+  --color-brand-cyan: #38BDF8;
+  --color-brand-indigo: #818CF8;
+  --color-brand-slate: #1F2937;
+}
+
+@layer utilities {
+  .glassmorphism {
+    @apply bg-[var(--color-brand-navy)]/80 backdrop-blur-md border border-[var(--color-brand-slate)] shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+  .cyan-glow {
+    @apply shadow-[0_0_8px_rgba(56,189,248,0.5)];
+  }
+  .cyan-border-glow {
+    @apply border-[var(--color-brand-cyan)] shadow-[0_0_8px_rgba(56,189,248,0.5)];
+  }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5)); }
+  50% { opacity: 0.7; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
+}
+
+@keyframes flow-particle {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+@keyframes gauge-fill {
+  from { stroke-dashoffset: 283; }
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: #38BDF8; box-shadow: 0 0 4px rgba(56,189,248,0.3); }
+  50% { border-color: #818CF8; box-shadow: 0 0 12px rgba(129,140,248,0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes expand-row {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 500px; }
+}
+
+@keyframes slide-in-bottom {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-toast {
+  0% { opacity: 0; transform: translateX(100%); }
+  10% { opacity: 1; transform: translateX(0); }
+  90% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-flow-particle {
+  animation: flow-particle 2s linear infinite;
+}
+
+.animate-gauge-fill {
+  animation: gauge-fill 1.5s ease-out forwards;
+}
+
+.animate-border-glow {
+  animation: border-glow 3s infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(31,41,55,0) 0%, rgba(31,41,55,0.2) 50%, rgba(31,41,55,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-expand-row {
+  animation: expand-row 0.3s ease-out forwards;
+  overflow: hidden;
+}
+
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s ease-out forwards;
+}
+
+.animate-slide-in-toast {
+  animation: slide-in-toast 3s ease-in-out forwards;
+}
+
+body {
+  background-color: var(--color-brand-obsidian);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
