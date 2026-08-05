@@ -26,23 +26,27 @@ def startup():
 
 @app.get("/screen")
 def screen(name: str, threshold: float = 70.0):
-    return screen_name(con, name, threshold)
+    cur = con.cursor()
+    return screen_name(cur, name, threshold)
 
 
 @app.get("/cases")
 def cases(threshold: float = Query(70.0)):
-    return screen_all_counterparties(con, threshold)
+    cur = con.cursor()
+    return screen_all_counterparties(cur, threshold)
 
 
 @app.get("/export")
 def export():
-    df = con.execute("SELECT * FROM counterparties").df()
+    cur = con.cursor()
+    df = cur.execute("SELECT * FROM counterparties").df()
     return df.to_dict(orient="records")
 
 
 @app.get("/stats")
 def stats(threshold: float = 70.0):
-    cases = screen_all_counterparties(con, threshold)
+    cur = con.cursor()
+    cases = screen_all_counterparties(cur, threshold)
     escalated = sum(1 for c in cases if c["status"] == "escalated")
     return {
         "total": len(cases),
