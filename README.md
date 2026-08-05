@@ -59,15 +59,6 @@ Runs at `http://localhost:3000`.
 
 Both servers must be running simultaneously, in separate terminals, for the dashboard to load data.
 
-## Screenshots
-
-> Add screenshots to a `/screenshots` folder in the repo and reference them below, e.g.:
->
-> ![Dashboard overview](./screenshots/dashboard-overview.png)
-> ![Case detail modal](./screenshots/case-detail.png)
-> ![Filtered case queue](./screenshots/filtered-queue.png)
-> ![Mobile responsive view](./screenshots/mobile-view.png)
-
 ## AI Usage Summary
 
 AI (Claude) was used as an implementation accelerator across scaffolding, debugging, design review (VAR), and documentation drafting. All AI-suggested changes were tested against the running application before being accepted — via terminal output, direct API calls, and visual verification — rather than accepted on faith. Debugging followed the Repomix protocol: sharing terminal logs, stack traces, and screenshots for each real issue rather than describing symptoms from memory. Full detail in [AI_USAGE.md](./AI_USAGE.md).
