@@ -1,9 +1,8 @@
 from rapidfuzz import fuzz, process
-import duckdb
 
 
-def screen_name(con: duckdb.DuckDBPyConnection, name: str, threshold: float = 70.0):
-    sanctioned = con.execute("SELECT name FROM sanctions_list").df()["name"].tolist()
+def screen_name(cur, name: str, threshold: float = 70.0):
+    sanctioned = cur.execute("SELECT name FROM sanctions_list").df()["name"].tolist()
 
     matches = process.extract(
         name, sanctioned, scorer=fuzz.token_sort_ratio, limit=5
@@ -34,17 +33,27 @@ def _explain(query: str, top: dict) -> str:
         return f"Low similarity to closest candidate '{top['matched_name']}' — likely not a match."
 
 
-def screen_all_counterparties(con: duckdb.DuckDBPyConnection, threshold: float = 70.0):
-    counterparties = con.execute("SELECT id, name FROM counterparties").df()
+def screen_all_counterparties(cur, threshold: float = 70.0):
+    counterparties = cur.execute("SELECT id, name FROM counterparties").df()
+    sanctioned = cur.execute("SELECT name FROM sanctions_list").df()["name"].tolist()
+
     cases = []
     for _, row in counterparties.iterrows():
-        result = screen_name(con, row["name"], threshold)
-        status = "escalated" if result["match_found"] else "cleared"
+        name = row["name"]
+        matches = process.extract(name, sanctioned, scorer=fuzz.token_sort_ratio, limit=5)
+        top = matches[0] if matches else None
+        score = round(top[1], 1) if top else 0.0
+        match_found = bool(top and top[1] >= threshold)
+        explainability = (
+            _explain(name, {"matched_name": top[0], "score": top[1]})
+            if top else "No candidates found in sanctions list."
+        )
+        status = "escalated" if match_found else "cleared"
         cases.append({
             "id": int(row["id"]),
-            "name": row["name"],
-            "confidence_score": result["confidence_score"],
+            "name": name,
+            "confidence_score": score,
             "status": status,
-            "explainability": result["explainability"],
+            "explainability": explainability,
         })
     return cases
