@@ -5,7 +5,7 @@ import ScreeningTable from "@/components/ScreeningTable";
 import ThresholdSlider from "@/components/ThresholdSlider";
 import InfoPanel from "@/components/InfoPanel";
 import MatchDistributionChart from "@/components/MatchDistributionChart";
-import CaseDetailModal from "@/components/CaseDetailModal";
+import CaseSidebar from "@/components/CaseSidebar";
 import CaseFilters from "@/components/CaseFilters";
 
 export default function Home() {
@@ -27,11 +27,13 @@ export default function Home() {
         setCases(c);
         setStats(s);
         setLoading(false);
+        if (!selectedCase && c.length > 0) setSelectedCase(c[0]);
       })
       .catch((err) => {
         setError(err.message || "Failed to load data");
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [threshold]);
 
   const filteredCases = useMemo(() => {
@@ -43,8 +45,9 @@ export default function Home() {
   }, [cases, statusFilter, search]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-950 to-black">
-      <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-8 sm:space-y-10">
+    <main className="min-h-screen" style={{ backgroundColor: "#030712" }}>
+      <div className="max-w-[1600px] mx-auto p-4 sm:p-8 space-y-6">
+        {/* Hero */}
         <header className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900 to-orange-950/20 p-6 sm:p-8">
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl" />
           <p className="text-orange-400 text-xs font-medium tracking-widest uppercase mb-2">
@@ -70,41 +73,45 @@ export default function Home() {
 
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <StatCard label="Total Screened" value={stats.total} accent="zinc" tooltip="Total counterparties screened against the sanctions list at the current threshold" />
-            <StatCard label="Escalated" value={stats.escalated} accent="red" tooltip="Cases where the fuzzy-match confidence score met or exceeded the threshold" />
-            <StatCard label="Cleared" value={stats.cleared} accent="emerald" tooltip="Cases below the match threshold — no action required" />
-            <StatCard label="Escalation Rate" value={`${stats.escalation_rate}%`} accent="orange" tooltip="Percentage of screened counterparties flagged for review" />
+            <StatCard label="Total Screened" value={stats.total} accent="zinc" tooltip="Total counterparties screened at the current threshold" />
+            <StatCard label="Escalated" value={stats.escalated} accent="red" tooltip="Cases meeting or exceeding the match threshold" />
+            <StatCard label="Cleared" value={stats.cleared} accent="emerald" tooltip="Cases below the match threshold" />
+            <StatCard label="Escalation Rate" value={`${stats.escalation_rate}%`} accent="orange" tooltip="Percentage of counterparties flagged for review" />
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <MatchDistributionChart cases={cases} />
-          </div>
-          <ThresholdSlider value={threshold} onChange={setThreshold} />
-        </div>
+        {/* 70/30 STAGE — main visualization (70%) + intelligence sidebar (30%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 items-start">
+          {/* 70% stage */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <MatchDistributionChart cases={cases} />
+              <ThresholdSlider value={threshold} onChange={setThreshold} />
+            </div>
 
-        <section>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-            <h2 className="text-lg font-medium text-zinc-200">Case Queue</h2>
-            <CaseFilters
-              statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
-              search={search}
-              onSearchChange={setSearch}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h2 className="text-lg font-medium text-zinc-200">Case Queue</h2>
+              <CaseFilters
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+                search={search}
+                onSearchChange={setSearch}
+              />
+            </div>
+            <ScreeningTable
+              cases={filteredCases}
+              loading={loading}
+              onRowClick={setSelectedCase}
+              selectedId={selectedCase?.id}
             />
           </div>
-          <ScreeningTable
-            cases={filteredCases}
-            loading={loading}
-            onRowClick={setSelectedCase}
-          />
-        </section>
-      </div>
 
-      {selectedCase && (
-        <CaseDetailModal caseData={selectedCase} onClose={() => setSelectedCase(null)} />
-      )}
+          {/* 30% sidebar — the "Handshake": clicking the stage populates this */}
+          <div className="lg:col-span-3">
+            <CaseSidebar caseData={selectedCase} />
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
