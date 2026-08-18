@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-pandas
-duckdb
-rapidfuzz
-python-multipart
