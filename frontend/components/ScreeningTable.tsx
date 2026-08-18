@@ -2,12 +2,10 @@ export default function ScreeningTable({
   cases,
   loading,
   onRowClick,
-  selectedId,
 }: {
   cases: any[];
   loading?: boolean;
   onRowClick?: (c: any) => void;
-  selectedId?: any;
 }) {
   if (loading) {
     return (
@@ -26,7 +24,7 @@ export default function ScreeningTable({
 
   return (
     <div className="bg-zinc-900/60 backdrop-blur rounded-xl border border-zinc-800 overflow-x-auto">
-      <table className="w-full text-sm min-w-[560px]">
+      <table className="w-full text-sm min-w-[640px]">
         <thead className="bg-zinc-800/80 text-zinc-400">
           <tr>
             <th className="text-left p-3 font-medium">Name</th>
@@ -34,6 +32,7 @@ export default function ScreeningTable({
               Confidence
             </th>
             <th className="text-left p-3 font-medium">Status</th>
+            <th className="text-left p-3 font-medium">Explainability</th>
           </tr>
         </thead>
         <tbody>
@@ -41,9 +40,7 @@ export default function ScreeningTable({
             <tr
               key={c.id}
               onClick={() => onRowClick?.(c)}
-              className={`border-t border-zinc-800/60 hover:bg-zinc-800/40 transition-colors cursor-pointer ${
-                selectedId === c.id ? "bg-orange-500/10 border-l-2 border-l-orange-500" : ""
-              }`}
+              className="border-t border-zinc-800/60 hover:bg-zinc-800/40 transition-colors cursor-pointer"
             >
               <td className="p-3 text-zinc-200">{c.name}</td>
               <td className="p-3">
@@ -68,6 +65,9 @@ export default function ScreeningTable({
                 >
                   {c.status}
                 </span>
+              </td>
+              <td className="p-3 text-zinc-500 max-w-md truncate" title={c.explainability}>
+                {c.explainability}
               </td>
             </tr>
           ))}
