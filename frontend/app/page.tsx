@@ -103,7 +103,7 @@ export default function Home() {
                 Governance &amp; Trust · Real Rails Intelligence Library (Batch 6 · POC-57)
               </p>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
-                Sanctions Screening Simulator
+                Infocreon Internship — Sanctions Screening Stimulator
               </h1>
               <p className="text-zinc-400 mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed">
                 Production-grade compliance screening against the official U.S. OFAC Specially Designated Nationals (SDN) sanctions dataset. Real-time RapidFuzz string distance, explainable match scoring, and review decision persistence.
