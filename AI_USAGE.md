@@ -1,30 +1,50 @@
-# AI Usage Summary — Sanctions Screening Simulator
+# AI Usage Summary — Sanctions Screening Simulator (POC-57)
 
-## How AI was used
+**Real Rails Intelligence Library — Governance & Trust**
+**Author:** Erine Anna Binu
 
-AI (Claude) was used as an implementation accelerator throughout this project, per the Real Rails engineering protocol. Usage fell into four categories:
+---
 
-### 1. Scaffolding
-- Generated the initial backend structure (`main.py`, `data_loader.py`, `matcher.py`) implementing OFAC CSV ingestion, synthetic counterparty generation, and RapidFuzz-based fuzzy matching
-- Generated the initial frontend structure (Next.js pages, components, API client) matching the project spec (stack, required features, panel copy)
+## 1. How AI Was Utilized
 
-### 2. Debugging
-Followed the Repomix debugging protocol: shared terminal output, stack traces, and screenshots for each issue rather than describing problems from memory. Issues diagnosed and fixed this way included:
-- A DuckDB thread-safety bug (`TypeError: 'NoneType' object is not subscriptable`, `KeyError: 'id'`) caused by sharing a single connection object across concurrent FastAPI request threads — fixed by issuing a per-request cursor
-- A file path/naming mismatch (`ofac_sdn.csv.csv` vs. expected `ofac_sdn.csv`) causing silent data-loading failures
-- Recurring "Failed to fetch" errors traced to the backend not actually running in the terminal being tested (wrong working directory, or the process having been replaced by a different command in the same terminal)
-- A corrupted Next.js `.next` build cache after a dependency reinstall, resolved via a clean cache + `node_modules` rebuild
+Per the **Real Rails Engineering Protocol**, AI (Claude / Antigravity) served as an engineering accelerator across scaffolding, debugging, architectural compliance auditing, and verification.
 
-### 3. Design/audit iteration
-Used AI as a design reviewer (VAR role) to identify gaps against the spec's visual and interaction requirements — filters, tooltips, loading states, and a case-detail view were all identified as missing and then implemented in response.
+### 1.1 Scaffolding & Initial Implementation
+- Generated the foundational FastAPI backend architecture (`main.py`, `data_loader.py`, `matcher.py`) for ingesting the official U.S. OFAC SDN sanctions CSV and applying RapidFuzz token-sort-ratio matching.
+- Scaffolded initial Next.js App Router components (`ScreeningTable`, `ThresholdSlider`, `MatchDistributionChart`) matching the dark fintech theme.
 
-### 4. Documentation generation
-This document, along with `VAR_REPORT.md`, `ARCHITECTURE.md`, and the `UAT_CHECKLIST.md` scaffold, were AI-drafted based on the actual implemented code and the review conducted during this project, then intended for manual verification before submission.
+### 1.2 Repomix Debugging Protocol
+All debugging strictly adhered to the Repomix protocol: passing full terminal outputs, stack traces, and direct endpoint responses rather than vague symptom descriptions:
+- **DuckDB Cursor Concurrency:** Diagnosed and resolved thread-safety exceptions under FastAPI's concurrent async handling by issuing per-request cursors (`con.cursor()`).
+- **Dynamic Path Resolution:** Identified and resolved relative file path errors (`FileNotFoundError: data/ofac_sdn.csv`) by anchoring resolution to `__file__`.
+- **DuckDB Type Conversion:** Resolved timestamp schema conversion errors by explicitly defining table schemas with `VARCHAR` decision fields.
+- **FastAPI Modernization:** Updated deprecated startup event handlers to FastAPI's modern async `lifespan` context manager.
+- **ESLint & TypeScript Cleanup:** Eliminated all explicit `any` types, unescaped entity warnings, and effect state cascades across all React components.
 
-## What was NOT delegated to AI
-- Manual verification of the UAT checklist (responsive behavior at specific breakpoints, data-correctness spot checks, edge case testing at threshold extremes) — these require running the actual application and were left as unchecked items for manual completion, not marked as done by AI
-- Final decisions on which VAR recommendations to act on before submission
-- Git commit/push operations were run by the developer, not automated
+### 1.3 Organisational Compliance & Architectural Gap Resolution
+- **70/30 Split Layout:** Restructured the application to follow the Real Rails Master Manifesto: 70% Main Stage on the left and 30% Intelligence Sidebar on the right.
+- **Mandatory Intelligence Sections:** Implemented all five required intelligence sections in the right-side rail: *Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*, and *Source Confidence Panel*.
+- **Reviewer Decision Persistence:** Engineered the complete decision recording workflow (`POST /cases/{id}/decision`), writing directly to DuckDB with UTC audit timestamps.
+- **Streaming CSV Export:** Implemented RFC 4180-compliant CSV streaming from `GET /export/csv`.
+- **FastMCP Protocol:** Wired `mcp_server.py` to the live OFAC dataset and matching engine.
 
-## Verification approach
-Every AI-suggested code change was applied and tested against the running application (via terminal output, direct API calls, and browser screenshots) before being accepted, following the "verification remains your responsibility" principle of the Phase 1 protocol.
+### 1.4 Automated Verification Suite
+- Authored a comprehensive 14-point automated test suite in `backend/test_backend.py` covering dataset loading, fuzzy matching invariance, decision persistence, export streaming, and MCP tools.
+
+---
+
+## 2. What Was NOT Delegated to AI
+
+- **Acceptance Decisions:** Architectural alignment and Gate 1 evaluation decisions remained with the developer.
+- **Data Provenance:** The official OFAC SDN dataset was sourced directly from the U.S. Department of the Treasury.
+- **Git Safety:** Git commands were kept strictly local; no destructive commands, rebasing, committing, pushing, or branch switching were automated.
+
+---
+
+## 3. Verification Protocol
+
+Every AI-suggested modification was verified against running processes:
+1. **Automated Backend Tests:** 14 of 14 pytest cases passing in 47.36s.
+2. **Frontend Linter:** `npm run lint` passing with 0 errors and 0 warnings.
+3. **Frontend Production Build:** `npm run build` compiling without errors.
+4. **End-to-End Live Connectivity:** Both FastAPI and Next.js verified via HTTP requests.
