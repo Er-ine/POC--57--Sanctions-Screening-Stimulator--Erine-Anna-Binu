@@ -1,4 +1,13 @@
-export default function CaseSidebar({ caseData }: { caseData: any | null }) {
+"use client";
+
+import React from "react";
+import { ScreeningCase } from "@/lib/types";
+
+export default function CaseSidebar({
+  caseData,
+}: {
+  caseData: ScreeningCase | null;
+}) {
   if (!caseData) {
     return (
       <div className="bg-zinc-900/60 backdrop-blur rounded-xl border border-zinc-800 p-5 h-full flex items-center justify-center text-zinc-500 text-sm text-center">
@@ -12,7 +21,9 @@ export default function CaseSidebar({ caseData }: { caseData: any | null }) {
       <p className="text-orange-400 text-xs font-medium tracking-widest uppercase mb-2">
         Case Intelligence
       </p>
-      <h3 className="text-lg font-semibold text-white mb-4 break-words">{caseData.name}</h3>
+      <h3 className="text-lg font-semibold text-white mb-4 break-words">
+        {caseData.name}
+      </h3>
 
       <div className="space-y-4 text-sm">
         <div>
@@ -47,19 +58,27 @@ export default function CaseSidebar({ caseData }: { caseData: any | null }) {
         </div>
 
         <div className="pt-2 border-t border-zinc-800">
-          <span className="text-zinc-500 block mb-2 text-xs uppercase tracking-wide">Who controls the rail</span>
+          <span className="text-zinc-500 block mb-2 text-xs uppercase tracking-wide">
+            Who controls the rail
+          </span>
           <p className="text-zinc-400 text-xs leading-relaxed">
-            This match is evaluated against OFAC's Specially Designated Nationals (SDN) list,
+            This match is evaluated against OFAC&apos;s Specially Designated Nationals (SDN) list,
             published and maintained by the U.S. Department of the Treasury.
           </p>
         </div>
       </div>
 
       <div className="mt-6 flex gap-2">
-        <button className="flex-1 bg-red-950 hover:bg-red-900 text-red-300 border border-red-900 rounded-lg py-2 text-sm font-medium transition-colors">
+        <button
+          type="button"
+          className="flex-1 bg-red-950 hover:bg-red-900 text-red-300 border border-red-900 rounded-lg py-2 text-sm font-medium transition-colors"
+        >
           Escalate
         </button>
-        <button className="flex-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-900 rounded-lg py-2 text-sm font-medium transition-colors">
+        <button
+          type="button"
+          className="flex-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-900 rounded-lg py-2 text-sm font-medium transition-colors"
+        >
           Clear
         </button>
       </div>
