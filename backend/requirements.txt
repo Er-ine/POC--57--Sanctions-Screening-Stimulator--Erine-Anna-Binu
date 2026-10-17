@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+duckdb
+rapidfuzz
+python-multipart
+httpx
+pytest
+mcp
