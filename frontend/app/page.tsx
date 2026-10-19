@@ -37,6 +37,7 @@ export default function Home() {
   const [isDeveloperInfoOpen, setIsDeveloperInfoOpen] = useState(false);
   const [isIntelligenceOpen, setIsIntelligenceOpen] = useState(false);
   const [reloadVersion, setReloadVersion] = useState(0);
+
   const developerInfoDialogRef = useRef<HTMLDialogElement>(null);
   const intelligenceTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -46,8 +47,11 @@ export default function Home() {
     const trigger = intelligenceTriggerRef.current;
     const previousOverflow = document.body.style.overflow;
     const previousPaddingRight = document.body.style.paddingRight;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
     document.body.style.overflow = "hidden";
+
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
@@ -60,15 +64,19 @@ export default function Home() {
       }
 
       if (event.key !== "Tab") return;
+
       const panel = document.getElementById("intelligence-layer-dialog");
       if (!panel) return;
+
       const focusable = panel.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
       );
+
       if (focusable.length === 0) return;
 
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
+
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
@@ -79,6 +87,7 @@ export default function Home() {
     };
 
     document.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.body.style.overflow = previousOverflow;
       document.body.style.paddingRight = previousPaddingRight;
@@ -86,6 +95,7 @@ export default function Home() {
       trigger?.focus();
     };
   }, [isIntelligenceOpen]);
+
   const closeDeveloperInfo = () => {
     developerInfoDialogRef.current?.close();
     setIsDeveloperInfoOpen(false);
@@ -111,6 +121,7 @@ export default function Home() {
         setIsDeveloperInfoOpen(false);
       }
     };
+
     document.addEventListener("keydown", closeOnEscape);
 
     return () => {
@@ -118,12 +129,13 @@ export default function Home() {
     };
   }, [isDeveloperInfoOpen]);
 
-  // Fetch data on threshold change
   useEffect(() => {
     let isMounted = true;
+
     Promise.allSettled([fetchCases(threshold), fetchStats(threshold)]).then(
       ([caseResult, statsResult]) => {
         if (!isMounted) return;
+
         const failures: string[] = [];
 
         if (caseResult.status === "fulfilled") {
@@ -132,15 +144,19 @@ export default function Home() {
           setCases(nextCases);
           setSelectedCase((previous) => {
             if (!previous) return nextCases[0] || null;
-            return nextCases.find((item) => item.id === previous.id) ||
+
+            return (
+              nextCases.find((item) => item.id === previous.id) ||
               nextCases[0] ||
-              null;
+              null
+            );
           });
         } else {
           const message =
             caseResult.reason instanceof Error
               ? caseResult.reason.message
               : "Failed to load screening cases.";
+
           failures.push(message);
           setCaseError(message);
           setCases([]);
@@ -167,13 +183,17 @@ export default function Home() {
       .then((sourceData) => {
         if (!isMounted) return;
         setSources(sourceData);
+        setSourceError(null);
         setSourcesLoading(false);
       })
       .catch((err: unknown) => {
         if (!isMounted) return;
+
         setSources([]);
         setSourceError(
-          err instanceof Error ? err.message : "Failed to load source provenance."
+          err instanceof Error
+            ? err.message
+            : "Failed to load source provenance."
         );
         setSourcesLoading(false);
       });
@@ -206,7 +226,7 @@ export default function Home() {
       prev.map((item) => (item.id === updated.id ? updated : item))
     );
     setSelectedCase(updated);
-    // Refresh stats to reflect manual review changes
+
     fetchStats(threshold)
       .then((s) => setStats(s))
       .catch((err: unknown) => {
@@ -220,22 +240,28 @@ export default function Home() {
 
   const filteredCases = useMemo(() => {
     const q = search.trim().toLowerCase();
+
     return cases.filter((c) => {
-      const matchesStatus = statusFilter === "all" || c.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "all" || c.status === statusFilter;
       const matchesName = c.name.toLowerCase().includes(q);
       const matchesCandidate = c.matched_name
         ? c.matched_name.toLowerCase().includes(q)
         : false;
+
       return matchesStatus && (matchesName || matchesCandidate);
     });
   }, [cases, statusFilter, search]);
 
   return (
-    <main className="min-h-screen text-zinc-100" style={{ backgroundColor: "#030712" }}>
-      <div className="max-w-[1720px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Hero Header */}
-        <header className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900 to-orange-950/20 p-6 sm:p-8 shadow-2xl">
-          <div className="absolute -top-24 -right-24 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+    <main
+      className="min-h-screen text-zinc-100"
+      style={{ backgroundColor: "#030712" }}
+    >
+      <div className="mx-auto max-w-[1720px] space-y-6 p-4 sm:p-6 lg:p-8">
+        <header className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900 to-orange-950/20 p-6 shadow-2xl sm:p-8">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+
           <button
             type="button"
             onClick={() => setIsDeveloperInfoOpen(true)}
@@ -245,50 +271,57 @@ export default function Home() {
           >
             i
           </button>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+
+          <div className="relative z-10 flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div className="pr-12 sm:pr-14">
-              <p className="text-orange-400 text-xs font-mono font-medium tracking-widest uppercase mb-1.5">
+              <p className="mb-1.5 font-mono text-xs font-medium uppercase tracking-widest text-orange-400">
                 Infocreon Internship · POC-57
               </p>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
+
+              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
                 Infocreon Internship - Sanctions Screening Simulator
               </h1>
-              <p className="text-zinc-400 mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed">
-                Production-grade compliance screening against the official U.S. OFAC Specially Designated Nationals (SDN) sanctions dataset. Real-time RapidFuzz string distance, explainable match scoring, and review decision persistence.
+
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-sm">
+                Production-grade compliance screening against the official U.S.
+                OFAC Specially Designated Nationals (SDN) sanctions dataset.
+                Real-time RapidFuzz string distance, explainable match scoring,
+                and review decision persistence.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 shrink-0 self-end">
+
+            <div className="flex shrink-0 flex-wrap items-center gap-3 self-end">
               <button
                 ref={intelligenceTriggerRef}
                 type="button"
                 onClick={() => setIsIntelligenceOpen(true)}
                 aria-haspopup="dialog"
                 aria-controls="intelligence-layer-dialog"
-                className="py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                className="rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-xs font-semibold text-zinc-100 transition-colors hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
               >
                 Intelligence Layer
               </button>
+
               <button
                 type="button"
                 onClick={() => setIsQuickScreenOpen(true)}
-                className="py-2.5 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-semibold transition-all shadow-lg shadow-orange-950/40 flex items-center gap-2"
+                className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-orange-950/40 transition-all hover:bg-orange-600"
               >
-                <span>🔍</span> Quick Screen Single Entity
+                <span aria-hidden="true">🔍</span> Quick Screen Single Entity
               </button>
             </div>
           </div>
         </header>
 
-        {/* Backend Connectivity Error Alert */}
         {error && (
-          <div className="bg-red-950/60 border border-red-900 rounded-xl p-4 text-red-200 text-xs flex flex-col gap-3 shadow-lg sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-xl border border-red-900 bg-red-950/60 p-4 text-xs text-red-200 shadow-lg sm:flex-row sm:items-center sm:justify-between">
             <span className="min-w-0 break-words">
               <strong>Dashboard data issue:</strong> {error}
             </span>
             <button
               type="button"
               onClick={handleRetry}
-              className="px-3 py-1 bg-red-900 hover:bg-red-800 text-white rounded text-xs"
+              className="rounded bg-red-900 px-3 py-1 text-xs text-white hover:bg-red-800"
             >
               Retry
             </button>
@@ -297,7 +330,7 @@ export default function Home() {
 
         {/* Dashboard metrics */}
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <StatCard
               label="Total Screened"
               value={stats.total}
@@ -329,10 +362,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Full-width screening dashboard */}
-        <div className="grid grid-cols-1 gap-6 items-start">
+        <div className="grid grid-cols-1 items-start gap-6">
           <section className="min-w-0 space-y-5">
-            {/* Control & Chart Row */}
             <div className="grid grid-cols-1 gap-4">
               <div className="min-w-0">
                 <MatchDistributionChart
@@ -341,6 +372,7 @@ export default function Home() {
                   loading={loading}
                 />
               </div>
+
               <div className="min-w-0">
                 <ThresholdSlider
                   value={threshold}
@@ -349,17 +381,18 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Case Queue Toolbar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
+                <h2 className="flex items-center gap-2 text-base font-semibold text-zinc-100">
                   <span>Case Review Queue</span>
-                  <span className="text-xs font-mono font-normal text-zinc-500">
+                  <span className="font-mono text-xs font-normal text-zinc-500">
                     ({loading ? "loading" : `${filteredCases.length} displayed`})
                   </span>
                 </h2>
+
                 <p className="text-[11px] text-zinc-400">
-                  Click any counterparty row to inspect match explainability and record compliance decisions.
+                  Click any counterparty row to inspect match explainability and
+                  record compliance decisions.
                 </p>
               </div>
 
@@ -371,7 +404,6 @@ export default function Home() {
               />
             </div>
 
-            {/* Table Component */}
             <ScreeningTable
               cases={filteredCases}
               loading={loading}
@@ -381,7 +413,6 @@ export default function Home() {
               selectedId={selectedCase?.id}
             />
           </section>
-
         </div>
 
         {isIntelligenceOpen && (
@@ -392,6 +423,7 @@ export default function Home() {
               onClick={() => setIsIntelligenceOpen(false)}
               className="absolute inset-0 h-full w-full cursor-default bg-black/70 backdrop-blur-sm"
             />
+
             <div
               id="intelligence-layer-dialog"
               role="dialog"
@@ -414,7 +446,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* Ad-hoc Quick Screener Modal */}
       <QuickScreenModal
         isOpen={isQuickScreenOpen}
         onClose={() => setIsQuickScreenOpen(false)}
@@ -441,22 +472,25 @@ export default function Home() {
             aria-hidden="true"
             className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl"
           />
+
           <div className="relative">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-400">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-orange-400">
                   Developer information
                 </p>
+
                 <h2
                   id="developer-info-title"
                   className="mt-2 text-xl font-semibold tracking-tight text-white"
                 >
-                  <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+                  <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
                     Developer
                   </span>
                   <span className="mt-1 block">Erine Anna Binu</span>
                 </h2>
               </div>
+
               <button
                 type="button"
                 autoFocus
@@ -467,16 +501,20 @@ export default function Home() {
                 <span aria-hidden="true">×</span>
               </button>
             </div>
+
             <div className="border-t border-zinc-800 pt-4">
-              <p className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+              <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
                 Project
               </p>
+
               <p className="mt-1 text-sm text-zinc-300">
-              Infocreon Internship - Sanctions Screening Simulator
+                Infocreon Internship - Sanctions Screening Simulator
               </p>
+
               <p className="mt-3 text-xs text-zinc-400">
-                Infocreon Internship
+                Infocreon Internship · POC-57
               </p>
+
               <div className="mt-4 flex flex-wrap gap-4 text-xs">
                 <a
                   href="https://github.com/Er-ine"
@@ -486,6 +524,7 @@ export default function Home() {
                 >
                   GitHub profile
                 </a>
+
                 <a
                   href="https://github.com/Real-Rails-Interns-Batch2/POC-57-Sanctions-Screening-Simulator-Phase-2"
                   target="_blank"
@@ -526,16 +565,20 @@ function StatCard({
   return (
     <div
       title={tooltip}
-      className="bg-zinc-900/60 backdrop-blur rounded-xl p-4 sm:p-5 border border-zinc-800 hover:border-zinc-700 transition-all cursor-help shadow-lg flex flex-col justify-between"
+      className="flex cursor-help flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 shadow-lg backdrop-blur transition-all hover:border-zinc-700 sm:p-5"
     >
-      <div className="text-zinc-400 text-[11px] font-mono uppercase tracking-wider">
+      <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">
         {label}
       </div>
-      <div className={`text-2xl sm:text-3xl font-bold font-mono mt-1 ${accentColors[accent]}`}>
+
+      <div
+        className={`mt-1 font-mono text-2xl font-bold sm:text-3xl ${accentColors[accent]}`}
+      >
         {value}
       </div>
+
       {subtext && (
-        <div className="text-[10px] text-zinc-500 font-mono mt-1 truncate">
+        <div className="mt-1 truncate font-mono text-[10px] text-zinc-500">
           {subtext}
         </div>
       )}
