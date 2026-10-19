@@ -1,6 +1,7 @@
-# Frontend — Sanctions Screening Simulator (POC-57)
+# Infocreon Internship - Sanctions Screening Simulator
 
-**Real Rails Intelligence Library — Governance & Trust**
+**Project ID:** POC-57
+**Program:** Infocreon Internship
 **Framework:** Next.js 16.2 (App Router) · React 19 · TypeScript · Tailwind CSS
 
 ---
@@ -45,7 +46,7 @@ frontend/
    - On page mount or whenever the threshold slider is dragged, `page.tsx` loads the cases and statistics concurrently and loads source provenance independently.
    - The API client uses `NEXT_PUBLIC_API_URL` when configured and otherwise defaults to `http://localhost:8000`. Public deployments must configure this variable with their backend API URL.
    - Failed requests produce explicit unavailable states instead of synthetic screening results or misleading zero counts. The queue and histogram update to reflect the new threshold without reloading the page.
-2. **The Real Rails Handshake:**
+2. **Case Review Workflow:**
    - Clicking any row in `ScreeningTable` triggers `setSelectedCase(case)`, which immediately updates the **Case Inspector** inside `IntelligenceSidebar`.
    - The Inspector displays the closest matched OFAC entity, confidence score, explainability rationale, and compliance review controls.
 3. **Persisted Reviewer Decision Actions:**
@@ -61,7 +62,7 @@ frontend/
 
 ## 4. Visual Identity & Design System
 
-The application strictly implements **Real Rails DNA**:
+The application uses a dark, high-contrast compliance dashboard design:
 - **Background:** `#030712` (Obsidian Black)
 - **Surfaces & Cards:** `#0B1117` / `zinc-900/60` with `backdrop-blur-md`
 - **Borders:** `#1F2937` (Slate-800) / `zinc-800`

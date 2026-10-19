@@ -248,10 +248,10 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
             <div className="pr-12 sm:pr-14">
               <p className="text-orange-400 text-xs font-mono font-medium tracking-widest uppercase mb-1.5">
-                Governance &amp; Trust · Real Rails Intelligence Library (Batch 6 · POC-57)
+                Infocreon Internship · POC-57
               </p>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
-                Sanctions Screening Simulator
+                Infocreon Internship - Sanctions Screening Simulator
               </h1>
               <p className="text-zinc-400 mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed">
                 Production-grade compliance screening against the official U.S. OFAC Specially Designated Nationals (SDN) sanctions dataset. Real-time RapidFuzz string distance, explainable match scoring, and review decision persistence.
@@ -295,7 +295,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Real Rails Top Metric Stage */}
+        {/* Dashboard metrics */}
         {stats && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatCard
@@ -472,7 +472,7 @@ export default function Home() {
                 Project
               </p>
               <p className="mt-1 text-sm text-zinc-300">
-              POC-57 — Sanctions Screening Simulator
+              Infocreon Internship - Sanctions Screening Simulator
               </p>
               <p className="mt-3 text-xs text-zinc-400">
                 Infocreon Internship
