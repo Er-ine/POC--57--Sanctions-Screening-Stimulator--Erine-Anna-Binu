@@ -7,9 +7,11 @@
 
 ## 1. Overview
 
-The frontend is a high-density compliance reviewer dashboard implementing the **Real Rails Master Manifesto 70/30 UI Architecture**:
-- **Main Stage (70%):** Real-time match distribution histogram, fuzzy threshold slider with quick sensitivity presets, client-side search/status filtering, and an interactive payment counterparty queue.
-- **Intelligence Sidebar (30%):** A persistent right-rail intelligence panel featuring the **Case Inspector** (with persistent *Escalate* and *Clear* decision workflows), narrative regulatory briefs (*Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*), the **Source Confidence Panel**, and streaming CSV export.
+The frontend is a high-density compliance reviewer dashboard. The histogram, threshold controls, and case queue use the full available content width. The Intelligence Layer opens in a right-side overlay drawer and does not resize or move the dashboard content.
+
+- **Main Stage:** Responsive match distribution histogram, fuzzy threshold slider with quick sensitivity presets, client-side search/status filtering, and interactive payment counterparty queue.
+- **Intelligence Layer:** Right-side overlay drawer featuring the **Case Inspector** (persistent *Escalate* and *Clear* decision workflows), narrative regulatory briefs (*Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*), the API-backed **Source Confidence Panel**, and CSV export. Case Inspector and Rail Governance remain available as tabs. Close it with the close button, Escape, or an outside click.
+- **Data availability:** Case/stat requests are required for screening results. If they fail, the UI shows an unavailable state rather than treating zero records as successful screening. Source provenance loads independently and is not replaced with hardcoded confidence figures.
 
 ---
 
@@ -20,11 +22,11 @@ frontend/
 ├── app/
 │   ├── globals.css              # Custom styling, glassmorphism, scrollbars, colors
 │   ├── layout.tsx               # Root dark theme layout wrapper
-│   └── page.tsx                 # Composition root: state coordination & 70/30 split
+│   └── page.tsx                 # Composition root: dashboard state and Intelligence Layer drawer
 ├── components/
 │   ├── CaseFilters.tsx          # Status filter buttons (All/Escalated/Cleared) + live search
 │   ├── CaseSidebar.tsx          # Standalone case inspector component
-│   ├── IntelligenceSidebar.tsx  # Full Real Rails 30% Intelligence Layer & decision workflow
+│   ├── IntelligenceSidebar.tsx  # Intelligence drawer, case and governance tabs
 │   ├── MatchDistributionChart.tsx # 5-bucket confidence score distribution histogram
 │   ├── QuickScreenModal.tsx     # Modal for ad-hoc single entity screening against OFAC
 │   ├── ScreeningTable.tsx       # Case review queue table with candidate matching & audit badges
@@ -40,8 +42,9 @@ frontend/
 ## 3. Key Workflows & State Flow
 
 1. **Initial Load & Threshold Adjustment:**
-   - On page mount or whenever the threshold slider is dragged, `page.tsx` calls `fetchCases(threshold)` and `fetchStats(threshold)` in parallel from `http://localhost:8000`.
-   - The queue and histogram update synchronously to reflect the new threshold without reloading the page.
+   - On page mount or whenever the threshold slider is dragged, `page.tsx` loads the cases and statistics concurrently and loads source provenance independently.
+   - The API client uses `NEXT_PUBLIC_API_URL` when configured and otherwise defaults to `http://localhost:8000`. Public deployments must configure this variable with their backend API URL.
+   - Failed requests produce explicit unavailable states instead of synthetic screening results or misleading zero counts. The queue and histogram update to reflect the new threshold without reloading the page.
 2. **The Real Rails Handshake:**
    - Clicking any row in `ScreeningTable` triggers `setSelectedCase(case)`, which immediately updates the **Case Inspector** inside `IntelligenceSidebar`.
    - The Inspector displays the closest matched OFAC entity, confidence score, explainability rationale, and compliance review controls.

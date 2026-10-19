@@ -5,10 +5,14 @@ import { ScreeningCase } from "@/lib/types";
 
 interface MatchDistributionChartProps {
   cases: ScreeningCase[];
+  unavailable?: boolean;
+  loading?: boolean;
 }
 
 export default function MatchDistributionChart({
   cases,
+  unavailable = false,
+  loading = false,
 }: MatchDistributionChartProps) {
   const buckets = [0, 0, 0, 0, 0];
   cases.forEach((c) => {
@@ -26,41 +30,63 @@ export default function MatchDistributionChart({
           Match Score Distribution
         </h3>
         <span className="text-[10px] font-mono text-zinc-500">
-          {cases.length} cases evaluated
+          {loading
+            ? "Loading results…"
+            : unavailable
+              ? "Results unavailable"
+              : `${cases.length} cases evaluated`}
         </span>
       </div>
 
-      <div className="flex items-end gap-3 h-36 pt-4 pb-1">
-        {buckets.map((count, i) => {
-          const heightPct = (count / max) * 100;
-          const isHighRisk = i >= 3;
-          return (
-            <div
-              key={i}
-              className="flex-1 flex flex-col items-center gap-2 group relative"
-            >
-              {/* Floating count badge */}
+      {loading || unavailable ? (
+        <div
+          role={unavailable ? "alert" : "status"}
+          aria-busy={loading}
+          className="flex min-h-36 items-center justify-center text-center text-xs text-zinc-500"
+        >
+          {loading
+            ? "Loading screening results…"
+            : "Match distribution is unavailable until screening data loads."}
+        </div>
+      ) : (
+        <div className="flex min-w-0 items-end gap-1 sm:gap-3 h-36 pt-4 pb-1">
+          {buckets.map((count, i) => {
+            const heightPct = (count / max) * 100;
+            const isHighRisk = i >= 3;
+            return (
               <div
-                title={`${count} cases in ${ranges[i]}`}
-                className={`w-full rounded-t transition-all duration-500 hover:opacity-85 cursor-help ${
-                  isHighRisk
-                    ? "bg-gradient-to-t from-red-600 to-orange-500"
-                    : "bg-gradient-to-t from-zinc-700 to-zinc-500"
-                }`}
-                style={{
-                  height: `${heightPct}%`,
-                  minHeight: count > 0 ? "6px" : "2px",
-                }}
-              />
-              <span className="text-[11px] font-mono text-zinc-400 group-hover:text-white transition-colors">
-                {ranges[i]}
-              </span>
-              <span className="text-[10px] font-mono text-zinc-500">
-                ({count})
-              </span>
-            </div>
-          );
-        })}
+                key={i}
+                className="flex min-w-0 flex-1 flex-col items-center gap-2 group relative"
+              >
+                <div
+                  title={`${count} cases in ${ranges[i]}`}
+                  className={`w-full rounded-t transition-all duration-500 hover:opacity-85 cursor-help ${
+                    isHighRisk
+                      ? "bg-gradient-to-t from-red-600 to-orange-500"
+                      : "bg-gradient-to-t from-zinc-700 to-zinc-500"
+                  }`}
+                  style={{
+                    height: `${heightPct}%`,
+                    minHeight: count > 0 ? "6px" : "2px",
+                  }}
+                />
+                <span className="w-full text-center text-[9px] font-mono text-zinc-400 group-hover:text-white transition-colors sm:text-[11px]">
+                  {ranges[i]}
+                </span>
+                <span className="text-[10px] font-mono text-zinc-500">
+                  ({count})
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div className="sr-only">
+        {loading
+          ? "Screening results are loading."
+          : unavailable
+          ? "No match-distribution results are available."
+          : `Evaluated match scores across ${cases.length} screening cases.`}
       </div>
     </div>
   );

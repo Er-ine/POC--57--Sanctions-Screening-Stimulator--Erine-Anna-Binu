@@ -6,6 +6,8 @@ import { ScreeningCase } from "@/lib/types";
 interface ScreeningTableProps {
   cases: ScreeningCase[];
   loading?: boolean;
+  hasError?: boolean;
+  totalCaseCount?: number;
   onRowClick?: (c: ScreeningCase) => void;
   selectedId?: number | null;
 }
@@ -13,6 +15,8 @@ interface ScreeningTableProps {
 export default function ScreeningTable({
   cases,
   loading = false,
+  hasError = false,
+  totalCaseCount = cases.length,
   onRowClick,
   selectedId,
 }: ScreeningTableProps) {
@@ -147,8 +151,15 @@ export default function ScreeningTable({
       </div>
 
       {cases.length === 0 && (
-        <div className="p-10 text-center text-zinc-500 text-sm">
-          No counterparties match this search query or status filter.
+        <div
+          role={hasError ? "alert" : "status"}
+          className="p-10 text-center text-zinc-500 text-sm"
+        >
+          {hasError
+            ? "Case queue unavailable. Reconnect to the screening API and retry."
+            : totalCaseCount > 0
+              ? "No counterparties match this search query or status filter."
+              : "No cases were returned for the current screening threshold."}
         </div>
       )}
     </div>

@@ -18,7 +18,7 @@ Exact-name string matching fails in production: sanctioned entities, blocked ves
 1. **Real Data Ingestion:** Loads the live OFAC Specially Designated Nationals (SDN) dataset (19,130+ designated records).
 2. **Fuzzy String Matching Engine:** RapidFuzz token-sort-ratio matching across synthetic payment counterparties (typo variants, token inversions, character mutations, and benign negative controls).
 3. **Explainable Confidence Scoring:** Generates a 0–100 similarity score paired with a plain-language audit rationale for defensible analyst reviews.
-4. **Real Rails 70/30 Split Architecture:** 70% Main Stage (score histogram, sensitivity slider, case queue) paired with a 30% Intelligence Sidebar (case inspector, reviewer decision persistence, regulatory authority breakdown, source provenance, and CSV export).
+4. **Responsive Intelligence Drawer:** The screening visualization, threshold controls, and case queue use the full dashboard width. The Intelligence Layer opens as a right-side overlay drawer, with Case Inspector and Rail Governance available as tabs.
 
 ---
 
@@ -35,22 +35,22 @@ Exact-name string matching fails in production: sanctioned entities, blocked ves
 │  │   (Port 3000)         │                       │  (Port 8000)     │  │
 │  │                       │                       │                  │  │
 │  │  ┌─────────────────┐  │                       │  ┌────────────┐  │  │
-│  │  │ Main Stage (70%)│  │                       │  │   DuckDB   │  │  │
+│  │  │ Main Stage     │  │                       │  │   DuckDB   │  │  │
 │  │  │ - Histogram     │  │                       │  │ (In-Memory)│  │  │
 │  │  │ - Slider (0-100)│  │                       │  └──────┬─────┘  │  │
 │  │  │ - Case Queue    │  │                                 │        │  │
 │  │  └─────────────────┘  │                       ┌─────────▼─────┐  │  │
 │  │                       │                       │ OFAC SDN List │  │  │
-│  │  ┌─────────────────┐  │                       │ (19,130+ rows)│  │  │
-│  │  │ Sidebar (30%)   │  │                       └───────────────┘  │  │
-│  │  │ - Case Inspector│  │                                          │  │
-│  │  │ - Decisions (DB)│  │  Endpoints:                             │  │
-│  │  │ - Why It Matters│  │  • GET  /cases?threshold=               │  │
-│  │  │ - Who Controls  │  │  • GET  /stats?threshold=               │  │
-│  │  │ - Source Prov.  │  │  • GET  /screen?name=&threshold=         │  │
-│  │  │ - Export CSV    │  │  • POST /cases/{id}/decision            │  │
-│  │  └─────────────────┘  │  • GET  /export?format=csv               │  │
-│  └───────────────────────┘  • GET  /api/source-confidence          │  │
+│  │  │ - Case Queue    │  │                       │ (19,130+ rows)│  │  │
+│  │  └─────────────────┘  │                       └───────────────┘  │  │
+│  │  Intelligence Layer: right-side overlay drawer                    │  │
+│  │  - Case Inspector / Rail Governance / Decisions / Source Provenance│  │
+│  │  - CSV export / Ad-hoc screener     Endpoints:                    │  │
+│  │                                       • GET /cases?threshold=     │  │
+│  │                                       • GET /stats?threshold=     │  │
+│  │                                       • POST /cases/{id}/decision│  │
+│  └───────────────────────┘              • GET /export?format=csv    │  │
+│                                          • GET /api/source-confidence│  │
 │                                                                        │
 ├────────────────────────────────────────────────────────────────────────┤
 │  Data Layer & Protocols:                                               │
@@ -78,9 +78,9 @@ Exact-name string matching fails in production: sanctioned entities, blocked ves
 - [x] **OFAC Ingestion:** Dynamic path-resolved ingestion of 19,130+ OFAC SDN records into DuckDB with entity types and sanctions program tags.
 - [x] **Token-Sort Fuzzy Engine:** Uses `fuzz.token_sort_ratio` to ensure token permutations (e.g. *&quot;AEROCARIBBEAN AIRLINES&quot;* vs. *&quot;AIRLINES AEROCARIBBEAN&quot;*) yield a 100% match score while capturing spelling variants.
 - [x] **Explainable Match Scoring:** Every candidate match generates a tier-based plain-language explanation distinguishing near-exact matches, potential transliterations, and low-probability lexical coincidences.
-- [x] **Real Rails 70/30 Split:**
-  - **Main Stage (70%):** Match distribution histogram, sensitivity threshold slider (0–100%), live search filter, and interactive case review table.
-  - **Intelligence Sidebar (30%):** Dual-mode interface housing the **Case Inspector** (with decision workflow) and **Rail Governance** (*Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*, and *Source Confidence Panel*).
+- [x] **Full-Width Dashboard and Intelligence Drawer:**
+  - The histogram, sensitivity slider, and case queue use the full available dashboard width by default.
+  - The Intelligence Layer opens in a right-side overlay and closes by button, Escape, or clicking outside. The Case Inspector and Rail Governance remain accessible in tabs.
 - [x] **Reviewer Decision Workflow (Persisted):** Analysts can record audit actions (*Escalate Case*, *Clear Case*) with custom compliance notes via `POST /cases/{case_id}/decision`, immediately updating the case queue, stats, and audit records in DuckDB.
 - [x] **Downloadable Sample Data / CSV Export:** Streamed live export from `GET /export?format=csv` incorporating case IDs, counterparty names, closest OFAC candidates, confidence scores, reviewer decisions, audit notes, and timestamps.
 - [x] **Ad-Hoc Single Entity Screener:** Interactive modal allowing compliance teams to test arbitrary entity queries against the live OFAC database with immediate candidate rankings and explainability.
@@ -201,11 +201,11 @@ Frontend quality verification:
 │   ├── app/
 │   │   ├── globals.css           # Tailwind styling & dark theme variables
 │   │   ├── layout.tsx            # Root layout wrapper
-│   │   └── page.tsx              # Main dashboard composition root (70/30 split)
+│   │   └── page.tsx              # Full-width dashboard and Intelligence Layer drawer
 │   ├── components/
 │   │   ├── CaseFilters.tsx       # Status toggle & search filtering
 │   │   ├── CaseSidebar.tsx       # Presentational inspector component
-│   │   ├── IntelligenceSidebar.tsx # Real Rails 30% Intelligence Layer & decision actions
+│   │   ├── IntelligenceSidebar.tsx # Intelligence drawer content and decision actions
 │   │   ├── MatchDistributionChart.tsx # Match score bucket histogram
 │   │   ├── QuickScreenModal.tsx  # Ad-hoc live OFAC entity screener
 │   │   ├── ScreeningTable.tsx    # Case review table with candidate matching
