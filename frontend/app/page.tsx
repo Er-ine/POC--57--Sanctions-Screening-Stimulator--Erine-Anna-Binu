@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchCases,
   fetchStats,
@@ -31,6 +31,39 @@ export default function Home() {
   const [search, setSearch] = useState<string>("");
   const [selectedCase, setSelectedCase] = useState<ScreeningCase | null>(null);
   const [isQuickScreenOpen, setIsQuickScreenOpen] = useState<boolean>(false);
+  const [isDeveloperInfoOpen, setIsDeveloperInfoOpen] = useState(false);
+  const developerInfoDialogRef = useRef<HTMLDialogElement>(null);
+  const closeDeveloperInfo = () => {
+    developerInfoDialogRef.current?.close();
+    setIsDeveloperInfoOpen(false);
+  };
+
+  useEffect(() => {
+    const dialog = developerInfoDialogRef.current;
+    if (!dialog) return;
+
+    if (!isDeveloperInfoOpen) {
+      if (dialog.open) dialog.close();
+      return;
+    }
+
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dialog.close();
+        setIsDeveloperInfoOpen(false);
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isDeveloperInfoOpen]);
 
   // Fetch data on threshold change
   useEffect(() => {
@@ -109,7 +142,15 @@ export default function Home() {
                 Production-grade compliance screening against the official U.S. OFAC Specially Designated Nationals (SDN) sanctions dataset. Real-time RapidFuzz string distance, explainable match scoring, and review decision persistence.
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-3 shrink-0 self-end">
+              <button
+                type="button"
+                onClick={() => setIsDeveloperInfoOpen(true)}
+                aria-label="Developer information"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-950/70 font-serif text-lg font-semibold text-orange-400 transition-colors hover:border-orange-400 hover:bg-orange-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                i
+              </button>
               <button
                 type="button"
                 onClick={() => setIsQuickScreenOpen(true)}
@@ -239,6 +280,59 @@ export default function Home() {
         onClose={() => setIsQuickScreenOpen(false)}
         defaultThreshold={threshold}
       />
+
+      <dialog
+        ref={developerInfoDialogRef}
+        aria-labelledby="developer-info-title"
+        onCancel={(event) => {
+          event.preventDefault();
+          closeDeveloperInfo();
+        }}
+        onClose={() => setIsDeveloperInfoOpen(false)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            closeDeveloperInfo();
+          }
+        }}
+        className="m-auto w-[min(92vw,28rem)] rounded-2xl border border-zinc-700 bg-zinc-950 p-0 text-zinc-100 shadow-2xl backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm"
+      >
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-950 to-orange-950/30 p-6 sm:p-8">
+          <div
+            aria-hidden="true"
+            className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl"
+          />
+          <div className="relative">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-400">
+                  Developer signature
+                </p>
+                <h2
+                  id="developer-info-title"
+                  className="mt-2 text-xl font-semibold tracking-tight text-white"
+                >
+                  Erine Anna Binu
+                </h2>
+              </div>
+              <button
+                type="button"
+                autoFocus
+                onClick={closeDeveloperInfo}
+                aria-label="Close developer information"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-zinc-700 text-zinc-400 transition-colors hover:border-zinc-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div className="border-t border-zinc-800 pt-4">
+              <p className="text-sm text-zinc-300">
+                Sanctions Screening Simulator
+              </p>
+              <p className="mt-1 text-xs font-mono text-zinc-500">POC-57</p>
+            </div>
+          </div>
+        </div>
+      </dialog>
     </main>
   );
 }
