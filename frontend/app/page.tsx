@@ -1,4 +1,3 @@
-```tsx
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -52,6 +51,7 @@ export default function Home() {
       window.innerWidth - document.documentElement.clientWidth;
 
     document.body.style.overflow = "hidden";
+
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
@@ -69,7 +69,7 @@ export default function Home() {
       if (!panel) return;
 
       const focusable = panel.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
       );
 
       if (focusable.length === 0) return;
@@ -144,6 +144,7 @@ export default function Home() {
           setCases(nextCases);
           setSelectedCase((previous) => {
             if (!previous) return nextCases[0] || null;
+
             return (
               nextCases.find((item) => item.id === previous.id) ||
               nextCases[0] ||
@@ -182,6 +183,7 @@ export default function Home() {
       .then((sourceData) => {
         if (!isMounted) return;
         setSources(sourceData);
+        setSourceError(null);
         setSourcesLoading(false);
       })
       .catch((err: unknown) => {
@@ -273,12 +275,11 @@ export default function Home() {
           <div className="relative z-10 flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div className="pr-12 sm:pr-14">
               <p className="mb-1.5 font-mono text-xs font-medium uppercase tracking-widest text-orange-400">
-                Governance &amp; Trust · Real Rails Intelligence Library
-                (Batch 6 · POC-57)
+                Infocreon Internship · POC-57
               </p>
 
               <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
-                Sanctions Screening Simulator
+                Infocreon Internship - Sanctions Screening Simulator
               </h1>
 
               <p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-sm">
@@ -306,7 +307,7 @@ export default function Home() {
                 onClick={() => setIsQuickScreenOpen(true)}
                 className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-orange-950/40 transition-all hover:bg-orange-600"
               >
-                <span>🔍</span> Quick Screen Single Entity
+                <span aria-hidden="true">🔍</span> Quick Screen Single Entity
               </button>
             </div>
           </div>
@@ -327,6 +328,7 @@ export default function Home() {
           </div>
         )}
 
+        {/* Dashboard metrics */}
         {stats && (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <StatCard
@@ -506,11 +508,11 @@ export default function Home() {
               </p>
 
               <p className="mt-1 text-sm text-zinc-300">
-                POC-57 — Sanctions Screening Simulator
+                Infocreon Internship - Sanctions Screening Simulator
               </p>
 
               <p className="mt-3 text-xs text-zinc-400">
-                Infocreon Internship
+                Infocreon Internship · POC-57
               </p>
 
               <div className="mt-4 flex flex-wrap gap-4 text-xs">
@@ -583,4 +585,3 @@ function StatCard({
     </div>
   );
 }
-```

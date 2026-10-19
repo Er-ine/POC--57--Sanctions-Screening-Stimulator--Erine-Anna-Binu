@@ -1,4 +1,11 @@
 import "./globals.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Infocreon Internship - Sanctions Screening Simulator",
+  description:
+    "POC-57 sanctions screening simulator developed as part of the Infocreon Internship.",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

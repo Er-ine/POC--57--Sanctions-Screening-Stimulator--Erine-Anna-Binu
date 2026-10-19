@@ -1,7 +1,8 @@
-# Sanctions Screening Simulator
+# Infocreon Internship - Sanctions Screening Simulator
 
-**Governance & Trust — Real Rails Intelligence Library**
-**Batch 6 · POC-57**
+- **Project:** Infocreon Internship - Sanctions Screening Simulator
+- **Program:** Infocreon Internship
+- **Project ID:** POC-57
 **Author:** Erine Anna Binu
 **Repository:** [POC--57--Sanctions-Screening-Stimulator--Erine-Anna-Binu](https://github.com/Er-ine/POC--57--Sanctions-Screening-Stimulator--Erine-Anna-Binu)
 **Evidence Drive:** [Screenshots & Demonstration Video](https://drive.google.com/drive/folders/1PgA-M80GGV0YOokWQKraaN6XEbxouY1g?usp=drive_link)
@@ -14,7 +15,7 @@ Financial institutions and cross-border payment processors are legally mandated 
 
 Exact-name string matching fails in production: sanctioned entities, blocked vessels, and designated individuals routinely appear under transliteration variations, spelling typos, token reorderings (e.g. *&quot;AIRLINES AEROCARIBBEAN&quot;* vs. *&quot;AEROCARIBBEAN AIRLINES&quot;*), and deliberate obfuscation.
 
-**Sanctions Screening Simulator (POC-57)** provides a production-grade, two-tier compliance workflow:
+**Infocreon Internship - Sanctions Screening Simulator (POC-57)** provides a production-grade compliance workflow:
 1. **Real Data Ingestion:** Loads the live OFAC Specially Designated Nationals (SDN) dataset (19,130+ designated records).
 2. **Fuzzy String Matching Engine:** RapidFuzz token-sort-ratio matching across synthetic payment counterparties (typo variants, token inversions, character mutations, and benign negative controls).
 3. **Explainable Confidence Scoring:** Generates a 0–100 similarity score paired with a plain-language audit rationale for defensible analyst reviews.
@@ -27,7 +28,7 @@ Exact-name string matching fails in production: sanctioned entities, blocked ves
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        REAL RAILS INTELLIGENCE                         │
-│                    Sanctions Screening Simulator                       │
+│      Infocreon Internship - Sanctions Screening Simulator              │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
 │  ┌───────────────────────┐         REST / JSON   ┌──────────────────┐  │
