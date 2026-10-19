@@ -7,10 +7,10 @@
 
 ## 1. Overview
 
-The frontend is a high-density compliance reviewer dashboard implementing the **Real Rails Master Manifesto 70/30 UI Architecture**. The Intelligence Layer opens expanded by default, giving the histogram, controls, queue, and intelligence content the full dashboard width. Collapsing it restores the 70/30 main-stage/right-rail layout.
+The frontend is a high-density compliance reviewer dashboard. The histogram, threshold controls, and case queue use the full available content width. The Intelligence Layer opens in a right-side overlay drawer and does not resize or move the dashboard content.
 
-- **Main Stage:** Responsive match distribution histogram, fuzzy threshold slider with quick sensitivity presets, client-side search/status filtering, and interactive payment counterparty queue. The chart and controls use a 70/30 split while the Intelligence Layer is collapsed and stack at full width while it is expanded.
-- **Intelligence Layer:** Expandable panel featuring the **Case Inspector** (persistent *Escalate* and *Clear* decision workflows), narrative regulatory briefs (*Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*), the API-backed **Source Confidence Panel**, and CSV export. Case Inspector and Rail Governance remain available as tabs.
+- **Main Stage:** Responsive match distribution histogram, fuzzy threshold slider with quick sensitivity presets, client-side search/status filtering, and interactive payment counterparty queue.
+- **Intelligence Layer:** Right-side overlay drawer featuring the **Case Inspector** (persistent *Escalate* and *Clear* decision workflows), narrative regulatory briefs (*Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*), the API-backed **Source Confidence Panel**, and CSV export. Case Inspector and Rail Governance remain available as tabs. Close it with the close button, Escape, or an outside click.
 - **Data availability:** Case/stat requests are required for screening results. If they fail, the UI shows an unavailable state rather than treating zero records as successful screening. Source provenance loads independently and is not replaced with hardcoded confidence figures.
 
 ---
@@ -22,11 +22,11 @@ frontend/
 ├── app/
 │   ├── globals.css              # Custom styling, glassmorphism, scrollbars, colors
 │   ├── layout.tsx               # Root dark theme layout wrapper
-│   └── page.tsx                 # Composition root: state coordination & responsive 70/30/full-width layout
+│   └── page.tsx                 # Composition root: dashboard state and Intelligence Layer drawer
 ├── components/
 │   ├── CaseFilters.tsx          # Status filter buttons (All/Escalated/Cleared) + live search
 │   ├── CaseSidebar.tsx          # Standalone case inspector component
-│   ├── IntelligenceSidebar.tsx  # Expandable Intelligence Layer, case and governance tabs
+│   ├── IntelligenceSidebar.tsx  # Intelligence drawer, case and governance tabs
 │   ├── MatchDistributionChart.tsx # 5-bucket confidence score distribution histogram
 │   ├── QuickScreenModal.tsx     # Modal for ad-hoc single entity screening against OFAC
 │   ├── ScreeningTable.tsx       # Case review queue table with candidate matching & audit badges
