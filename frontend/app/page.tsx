@@ -130,8 +130,17 @@ export default function Home() {
         {/* Hero Header */}
         <header className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900 to-orange-950/20 p-6 sm:p-8 shadow-2xl">
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+          <button
+            type="button"
+            onClick={() => setIsDeveloperInfoOpen(true)}
+            aria-label="Developer information"
+            title="Developer information"
+            className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border-2 border-orange-300 bg-orange-500 text-xl font-bold italic text-zinc-950 shadow-lg shadow-orange-950/60 transition-colors hover:border-orange-200 hover:bg-orange-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900"
+          >
+            i
+          </button>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-            <div>
+            <div className="pr-12 sm:pr-14">
               <p className="text-orange-400 text-xs font-mono font-medium tracking-widest uppercase mb-1.5">
                 Governance &amp; Trust · Real Rails Intelligence Library (Batch 6 · POC-57)
               </p>
@@ -143,14 +152,6 @@ export default function Home() {
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 self-end">
-              <button
-                type="button"
-                onClick={() => setIsDeveloperInfoOpen(true)}
-                aria-label="Developer information"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-950/70 font-serif text-lg font-semibold text-orange-400 transition-colors hover:border-orange-400 hover:bg-orange-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-              >
-                i
-              </button>
               <button
                 type="button"
                 onClick={() => setIsQuickScreenOpen(true)}
@@ -305,13 +306,16 @@ export default function Home() {
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-400">
-                  Developer signature
+                  Developer information
                 </p>
                 <h2
                   id="developer-info-title"
                   className="mt-2 text-xl font-semibold tracking-tight text-white"
                 >
-                  Erine Anna Binu
+                  <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+                    Developer
+                  </span>
+                  <span className="mt-1 block">Erine Anna Binu</span>
                 </h2>
               </div>
               <button
@@ -325,10 +329,12 @@ export default function Home() {
               </button>
             </div>
             <div className="border-t border-zinc-800 pt-4">
-              <p className="text-sm text-zinc-300">
-                Sanctions Screening Simulator
+              <p className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+                Project
               </p>
-              <p className="mt-1 text-xs font-mono text-zinc-500">POC-57</p>
+              <p className="mt-1 text-sm text-zinc-300">
+                POC-57 — Sanctions Screening Stimulator
+              </p>
             </div>
           </div>
         </div>
