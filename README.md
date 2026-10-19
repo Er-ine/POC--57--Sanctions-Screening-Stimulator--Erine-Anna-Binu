@@ -18,7 +18,7 @@ Exact-name string matching fails in production: sanctioned entities, blocked ves
 1. **Real Data Ingestion:** Loads the live OFAC Specially Designated Nationals (SDN) dataset (19,130+ designated records).
 2. **Fuzzy String Matching Engine:** RapidFuzz token-sort-ratio matching across synthetic payment counterparties (typo variants, token inversions, character mutations, and benign negative controls).
 3. **Explainable Confidence Scoring:** Generates a 0–100 similarity score paired with a plain-language audit rationale for defensible analyst reviews.
-4. **Real Rails 70/30 Split Architecture:** 70% Main Stage (score histogram, sensitivity slider, case queue) paired with a 30% Intelligence Sidebar (case inspector, reviewer decision persistence, regulatory authority breakdown, source provenance, and CSV export).
+4. **Responsive Real Rails 70/30 Architecture:** The Intelligence Layer collapses to the right-side 30% rail while the main stage uses 70%; opening it expands the visualization and intelligence content to the full dashboard width, with Case Inspector and Rail Governance available as tabs.
 
 ---
 
@@ -79,8 +79,8 @@ Exact-name string matching fails in production: sanctioned entities, blocked ves
 - [x] **Token-Sort Fuzzy Engine:** Uses `fuzz.token_sort_ratio` to ensure token permutations (e.g. *&quot;AEROCARIBBEAN AIRLINES&quot;* vs. *&quot;AIRLINES AEROCARIBBEAN&quot;*) yield a 100% match score while capturing spelling variants.
 - [x] **Explainable Match Scoring:** Every candidate match generates a tier-based plain-language explanation distinguishing near-exact matches, potential transliterations, and low-probability lexical coincidences.
 - [x] **Real Rails 70/30 Split:**
-  - **Main Stage (70%):** Match distribution histogram, sensitivity threshold slider (0–100%), live search filter, and interactive case review table.
-  - **Intelligence Sidebar (30%):** Dual-mode interface housing the **Case Inspector** (with decision workflow) and **Rail Governance** (*Why This Matters*, *Who Controls This Rail*, *Decisions to Make*, *Derived Insights*, and *Source Confidence Panel*).
+  - **Collapsed:** Main Stage (70%) with histogram, sensitivity slider, live search, and interactive case review queue; Intelligence Layer (30%) on the right.
+  - **Expanded by default:** Responsive full-width histogram, threshold controls, case queue, and Intelligence Layer. The Case Inspector and Rail Governance remain accessible in tabs.
 - [x] **Reviewer Decision Workflow (Persisted):** Analysts can record audit actions (*Escalate Case*, *Clear Case*) with custom compliance notes via `POST /cases/{case_id}/decision`, immediately updating the case queue, stats, and audit records in DuckDB.
 - [x] **Downloadable Sample Data / CSV Export:** Streamed live export from `GET /export?format=csv` incorporating case IDs, counterparty names, closest OFAC candidates, confidence scores, reviewer decisions, audit notes, and timestamps.
 - [x] **Ad-Hoc Single Entity Screener:** Interactive modal allowing compliance teams to test arbitrary entity queries against the live OFAC database with immediate candidate rankings and explainability.

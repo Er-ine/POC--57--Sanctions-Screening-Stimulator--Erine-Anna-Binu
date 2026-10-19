@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchCases,
   fetchStats,
@@ -24,48 +24,133 @@ export default function Home() {
   const [cases, setCases] = useState<ScreeningCase[]>([]);
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [sources, setSources] = useState<SourceConfidence[]>([]);
+  const [sourceError, setSourceError] = useState<string | null>(null);
+  const [sourcesLoading, setSourcesLoading] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [caseError, setCaseError] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<"all" | CaseStatus>("all");
   const [search, setSearch] = useState<string>("");
   const [selectedCase, setSelectedCase] = useState<ScreeningCase | null>(null);
   const [isQuickScreenOpen, setIsQuickScreenOpen] = useState<boolean>(false);
+  const [isDeveloperInfoOpen, setIsDeveloperInfoOpen] = useState(false);
+  const [isIntelligenceExpanded, setIsIntelligenceExpanded] = useState(true);
+  const [reloadVersion, setReloadVersion] = useState(0);
+  const developerInfoDialogRef = useRef<HTMLDialogElement>(null);
+  const closeDeveloperInfo = () => {
+    developerInfoDialogRef.current?.close();
+    setIsDeveloperInfoOpen(false);
+  };
+
+  useEffect(() => {
+    const dialog = developerInfoDialogRef.current;
+    if (!dialog) return;
+
+    if (!isDeveloperInfoOpen) {
+      if (dialog.open) dialog.close();
+      return;
+    }
+
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dialog.close();
+        setIsDeveloperInfoOpen(false);
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isDeveloperInfoOpen]);
 
   // Fetch data on threshold change
   useEffect(() => {
     let isMounted = true;
-    Promise.all([
-      fetchCases(threshold),
-      fetchStats(threshold),
-      fetchSourceConfidence(),
-    ])
-      .then(([c, s, src]) => {
+    Promise.allSettled([fetchCases(threshold), fetchStats(threshold)]).then(
+      ([caseResult, statsResult]) => {
         if (!isMounted) return;
-        setCases(c);
-        setStats(s);
-        setSources(src);
+        const failures: string[] = [];
+
+        if (caseResult.status === "fulfilled") {
+          const nextCases = caseResult.value;
+          setCaseError(null);
+          setCases(nextCases);
+          setSelectedCase((previous) => {
+            if (!previous) return nextCases[0] || null;
+            return nextCases.find((item) => item.id === previous.id) ||
+              nextCases[0] ||
+              null;
+          });
+        } else {
+          const message =
+            caseResult.reason instanceof Error
+              ? caseResult.reason.message
+              : "Failed to load screening cases.";
+          failures.push(message);
+          setCaseError(message);
+          setCases([]);
+          setSelectedCase(null);
+        }
+
+        if (statsResult.status === "fulfilled") {
+          setStats(statsResult.value);
+        } else {
+          failures.push(
+            statsResult.reason instanceof Error
+              ? statsResult.reason.message
+              : "Failed to load screening statistics."
+          );
+          setStats(null);
+        }
+
+        setError(failures.length > 0 ? failures.join(" · ") : null);
         setLoading(false);
-        setSelectedCase((prev) => {
-          if (!prev) return c[0] || null;
-          const match = c.find((item) => item.id === prev.id);
-          return match || c[0] || null;
-        });
+      }
+    );
+
+    fetchSourceConfidence()
+      .then((sourceData) => {
+        if (!isMounted) return;
+        setSources(sourceData);
+        setSourcesLoading(false);
       })
       .catch((err: unknown) => {
         if (!isMounted) return;
-        setError(err instanceof Error ? err.message : "Failed to load data");
-        setLoading(false);
+        setSources([]);
+        setSourceError(
+          err instanceof Error ? err.message : "Failed to load source provenance."
+        );
+        setSourcesLoading(false);
       });
 
     return () => {
       isMounted = false;
     };
-  }, [threshold]);
+  }, [threshold, reloadVersion]);
 
   const handleThresholdChange = (newVal: number) => {
     setLoading(true);
+    setError(null);
+    setCaseError(null);
+    setSourceError(null);
+    setSourcesLoading(true);
     setThreshold(newVal);
+  };
+
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    setCaseError(null);
+    setSourceError(null);
+    setSourcesLoading(true);
+    setReloadVersion((version) => version + 1);
   };
 
   const handleCaseUpdated = (updated: ScreeningCase) => {
@@ -76,7 +161,13 @@ export default function Home() {
     // Refresh stats to reflect manual review changes
     fetchStats(threshold)
       .then((s) => setStats(s))
-      .catch(() => {});
+      .catch((err: unknown) => {
+        setError(
+          err instanceof Error
+            ? `Decision saved, but dashboard metrics could not refresh: ${err.message}`
+            : "Decision saved, but dashboard metrics could not refresh."
+        );
+      });
   };
 
   const filteredCases = useMemo(() => {
@@ -97,19 +188,28 @@ export default function Home() {
         {/* Hero Header */}
         <header className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900 to-orange-950/20 p-6 sm:p-8 shadow-2xl">
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+          <button
+            type="button"
+            onClick={() => setIsDeveloperInfoOpen(true)}
+            aria-label="Developer information"
+            title="Developer information"
+            className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border-2 border-orange-300 bg-orange-500 text-xl font-bold italic text-zinc-950 shadow-lg shadow-orange-950/60 transition-colors hover:border-orange-200 hover:bg-orange-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900"
+          >
+            i
+          </button>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-            <div>
+            <div className="pr-12 sm:pr-14">
               <p className="text-orange-400 text-xs font-mono font-medium tracking-widest uppercase mb-1.5">
                 Governance &amp; Trust · Real Rails Intelligence Library (Batch 6 · POC-57)
               </p>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
-                Infocreon Internship — Sanctions Screening Stimulator
+                Sanctions Screening Simulator
               </h1>
               <p className="text-zinc-400 mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed">
                 Production-grade compliance screening against the official U.S. OFAC Specially Designated Nationals (SDN) sanctions dataset. Real-time RapidFuzz string distance, explainable match scoring, and review decision persistence.
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-3 shrink-0 self-end">
               <button
                 type="button"
                 onClick={() => setIsQuickScreenOpen(true)}
@@ -123,18 +223,13 @@ export default function Home() {
 
         {/* Backend Connectivity Error Alert */}
         {error && (
-          <div className="bg-red-950/60 border border-red-900 rounded-xl p-4 text-red-200 text-xs flex items-center justify-between shadow-lg">
-            <span>
-              <strong>Backend Connection Issue:</strong> {error}. Ensure FastAPI is running on{" "}
-              <code className="bg-red-900/40 px-1 py-0.5 rounded font-mono">http://localhost:8000</code>.
+          <div className="bg-red-950/60 border border-red-900 rounded-xl p-4 text-red-200 text-xs flex flex-col gap-3 shadow-lg sm:flex-row sm:items-center sm:justify-between">
+            <span className="min-w-0 break-words">
+              <strong>Dashboard data issue:</strong> {error}
             </span>
             <button
               type="button"
-              onClick={() => {
-                setLoading(true);
-                setError(null);
-                fetchCases(threshold).then((c) => setCases(c)).catch(() => {});
-              }}
+              onClick={handleRetry}
               className="px-3 py-1 bg-red-900 hover:bg-red-800 text-white rounded text-xs"
             >
               Retry
@@ -179,14 +274,34 @@ export default function Home() {
         {/* 70/30 SPLIT ARCHITECTURE — Real Rails Master Manifesto Protocol */}
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-start">
           {/* 70% MAIN STAGE */}
-          <section className="lg:col-span-7 space-y-5">
+          <section
+            className={`space-y-5 transition-[grid-column] duration-300 motion-reduce:transition-none ${
+              isIntelligenceExpanded ? "lg:col-span-10" : "lg:col-span-7"
+            }`}
+          >
             {/* Control & Chart Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <MatchDistributionChart cases={cases} />
-              <ThresholdSlider
-                value={threshold}
-                onChange={handleThresholdChange}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
+              <div
+                className={`min-w-0 ${
+                  isIntelligenceExpanded ? "md:col-span-10" : "md:col-span-7"
+                }`}
+              >
+                <MatchDistributionChart
+                  cases={cases}
+                  unavailable={Boolean(caseError)}
+                  loading={loading}
+                />
+              </div>
+              <div
+                className={`min-w-0 ${
+                  isIntelligenceExpanded ? "md:col-span-10" : "md:col-span-3"
+                }`}
+              >
+                <ThresholdSlider
+                  value={threshold}
+                  onChange={handleThresholdChange}
+                />
+              </div>
             </div>
 
             {/* Case Queue Toolbar */}
@@ -195,7 +310,7 @@ export default function Home() {
                 <h2 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
                   <span>Case Review Queue</span>
                   <span className="text-xs font-mono font-normal text-zinc-500">
-                    ({filteredCases.length} displayed)
+                    ({loading ? "loading" : `${filteredCases.length} displayed`})
                   </span>
                 </h2>
                 <p className="text-[11px] text-zinc-400">
@@ -215,19 +330,31 @@ export default function Home() {
             <ScreeningTable
               cases={filteredCases}
               loading={loading}
+              hasError={Boolean(caseError)}
+              totalCaseCount={cases.length}
               onRowClick={setSelectedCase}
               selectedId={selectedCase?.id}
             />
           </section>
 
-          {/* 30% INTELLIGENCE SIDEBAR — The Handshake & Rail Governance */}
-          <div className="lg:col-span-3 sticky top-6">
+          {/* The Intelligence Layer occupies the full rail when expanded. */}
+          <div
+            className={`min-w-0 transition-[grid-column] duration-300 motion-reduce:transition-none ${
+              isIntelligenceExpanded
+                ? "lg:col-span-10"
+                : "lg:col-span-3 lg:sticky lg:top-6"
+            }`}
+          >
             <IntelligenceSidebar
               selectedCase={selectedCase}
               onCaseUpdated={handleCaseUpdated}
               threshold={threshold}
               sources={sources}
+              sourceError={sourceError}
+              sourcesLoading={sourcesLoading}
               onOpenQuickScreen={() => setIsQuickScreenOpen(true)}
+              isExpanded={isIntelligenceExpanded}
+              onExpandedChange={setIsIntelligenceExpanded}
             />
           </div>
         </div>
@@ -239,6 +366,85 @@ export default function Home() {
         onClose={() => setIsQuickScreenOpen(false)}
         defaultThreshold={threshold}
       />
+
+      <dialog
+        ref={developerInfoDialogRef}
+        aria-labelledby="developer-info-title"
+        onCancel={(event) => {
+          event.preventDefault();
+          closeDeveloperInfo();
+        }}
+        onClose={() => setIsDeveloperInfoOpen(false)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            closeDeveloperInfo();
+          }
+        }}
+        className="m-auto w-[min(92vw,28rem)] rounded-2xl border border-zinc-700 bg-zinc-950 p-0 text-zinc-100 shadow-2xl backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm"
+      >
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-950 to-orange-950/30 p-6 sm:p-8">
+          <div
+            aria-hidden="true"
+            className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl"
+          />
+          <div className="relative">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-400">
+                  Developer information
+                </p>
+                <h2
+                  id="developer-info-title"
+                  className="mt-2 text-xl font-semibold tracking-tight text-white"
+                >
+                  <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+                    Developer
+                  </span>
+                  <span className="mt-1 block">Erine Anna Binu</span>
+                </h2>
+              </div>
+              <button
+                type="button"
+                autoFocus
+                onClick={closeDeveloperInfo}
+                aria-label="Close developer information"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-zinc-700 text-zinc-400 transition-colors hover:border-zinc-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div className="border-t border-zinc-800 pt-4">
+              <p className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+                Project
+              </p>
+              <p className="mt-1 text-sm text-zinc-300">
+              POC-57 — Sanctions Screening Simulator
+              </p>
+              <p className="mt-3 text-xs text-zinc-400">
+                Infocreon Internship
+              </p>
+              <div className="mt-4 flex flex-wrap gap-4 text-xs">
+                <a
+                  href="https://github.com/Er-ine"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-orange-400 underline decoration-orange-400/40 underline-offset-4 hover:text-orange-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                >
+                  GitHub profile
+                </a>
+                <a
+                  href="https://github.com/Real-Rails-Interns-Batch2/POC-57-Sanctions-Screening-Simulator-Phase-2"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-orange-400 underline decoration-orange-400/40 underline-offset-4 hover:text-orange-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                >
+                  Project repository
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </dialog>
     </main>
   );
 }

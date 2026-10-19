@@ -12,8 +12,12 @@ interface IntelligenceSidebarProps {
   selectedCase: ScreeningCase | null;
   onCaseUpdated: (updatedCase: ScreeningCase) => void;
   threshold: number;
-  sources?: SourceConfidenceType[];
+  sources: SourceConfidenceType[];
+  sourceError: string | null;
+  sourcesLoading: boolean;
   onOpenQuickScreen?: () => void;
+  isExpanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
 }
 
 export default function IntelligenceSidebar({
@@ -21,9 +25,15 @@ export default function IntelligenceSidebar({
   onCaseUpdated,
   threshold,
   sources,
+  sourceError,
+  sourcesLoading,
   onOpenQuickScreen,
+  isExpanded,
+  onExpandedChange,
 }: IntelligenceSidebarProps) {
-  const [activeTab, setActiveTab] = useState<"case" | "intelligence">("case");
+  const [activeTab, setActiveTab] = useState<"case" | "intelligence">(
+    "intelligence"
+  );
   const [reviewerNotes, setReviewerNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{
@@ -69,47 +79,109 @@ export default function IntelligenceSidebar({
   };
 
   return (
-    <aside className="bg-zinc-900/70 backdrop-blur-md rounded-2xl border border-zinc-800 flex flex-col overflow-hidden shadow-2xl">
+    <aside className="min-w-0 bg-zinc-900/70 backdrop-blur-md rounded-2xl border border-zinc-800 flex flex-col shadow-2xl">
       {/* Sidebar Header & Tab Navigation */}
-      <div className="p-4 border-b border-zinc-800 bg-zinc-950/40">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[11px] font-mono tracking-widest text-orange-400 uppercase font-semibold">
-            Intelligence Layer · 30% Rail
-          </span>
-          <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">
-            T:{threshold}%
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800/80">
+      <div className="border-b border-zinc-800 bg-zinc-950/40">
+        <div className="flex items-center gap-3 p-4">
           <button
             type="button"
-            onClick={() => setActiveTab("case")}
-            className={`py-1.5 text-xs font-medium rounded-md transition-all ${
-              activeTab === "case"
-                ? "bg-zinc-800 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
+            onClick={() => onExpandedChange(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-controls="intelligence-layer-content"
+            className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
           >
-            Case Inspector
+            <span className="text-[11px] font-mono tracking-widest text-orange-400 uppercase font-semibold">
+              Intelligence Layer
+            </span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              fill="none"
+              className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 motion-reduce:transition-none ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            >
+              <path
+                d="m5 7.5 5 5 5-5"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("intelligence")}
-            className={`py-1.5 text-xs font-medium rounded-md transition-all ${
-              activeTab === "intelligence"
-                ? "bg-zinc-800 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            Rail Governance
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
+              {isExpanded ? "100% WIDTH" : "30% RAIL"}
+            </span>
+            <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
+              T:{threshold}%
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* Main Tab Content */}
-      <div className="p-5 space-y-6 overflow-y-auto max-h-[calc(100vh-280px)]">
-        {activeTab === "case" ? (
+        <div
+          id="intelligence-layer-content"
+          aria-hidden={!isExpanded}
+          inert={!isExpanded}
+          className={`grid transition-[grid-template-rows,opacity] duration-300 motion-reduce:transition-none ${
+            isExpanded
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+          <div className="px-4 pb-4">
+            <div
+              role="tablist"
+              aria-label="Intelligence layer views"
+              className="grid grid-cols-2 gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800/80"
+            >
+              <button
+                type="button"
+                role="tab"
+                id="case-inspector-tab"
+                aria-controls="intelligence-layer-panel"
+                aria-selected={activeTab === "case"}
+                onClick={() => setActiveTab("case")}
+                className={`py-1.5 text-xs font-medium rounded-md transition-all ${
+                  activeTab === "case"
+                    ? "bg-zinc-800 text-white shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Case Inspector
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="rail-governance-tab"
+                aria-controls="intelligence-layer-panel"
+                aria-selected={activeTab === "intelligence"}
+                onClick={() => setActiveTab("intelligence")}
+                className={`py-1.5 text-xs font-medium rounded-md transition-all ${
+                  activeTab === "intelligence"
+                    ? "bg-zinc-800 text-white shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Rail Governance
+              </button>
+            </div>
+          </div>
+
+            {/* Main Tab Content */}
+            <div
+              role="tabpanel"
+              id="intelligence-layer-panel"
+              aria-labelledby={
+                activeTab === "case"
+                  ? "case-inspector-tab"
+                  : "rail-governance-tab"
+              }
+              className="min-w-0 p-5 space-y-6"
+            >
+              {activeTab === "case" ? (
           /* TAB 1: CASE INSPECTOR & WORKFLOW */
           selectedCase ? (
             <div className="space-y-4">
@@ -240,7 +312,7 @@ export default function IntelligenceSidebar({
               Select a payment counterparty from the queue to inspect match candidates and record decisions.
             </div>
           )
-        ) : (
+              ) : (
           /* TAB 2: COMPLETE REAL RAILS INSTITUTIONAL INTELLIGENCE */
           <div className="space-y-4">
             {/* Why This Matters */}
@@ -307,13 +379,20 @@ export default function IntelligenceSidebar({
             </div>
 
             {/* Source Confidence Panel */}
-            <SourceConfidencePanel sources={sources} />
+            <SourceConfidencePanel
+              sources={sources}
+              loading={sourcesLoading}
+              error={sourceError}
+            />
           </div>
         )}
-      </div>
+            </div>
+          </div>
+          </div>
+        </div>
 
       {/* Action Footer */}
-      <div className="p-4 border-t border-zinc-800 bg-zinc-950/60 mt-auto space-y-2">
+        <div className="p-4 border-t border-zinc-800 bg-zinc-950/60 mt-auto space-y-2">
         <button
           type="button"
           onClick={handleExportCsv}
@@ -335,7 +414,7 @@ export default function IntelligenceSidebar({
         <div className="pt-2 text-center text-[9px] font-mono tracking-widest text-zinc-500 uppercase border-t border-zinc-800/40">
           DATA CLASSIFICATION: REAL OFAC SDN + SYNTHETIC TEST CASES
         </div>
-      </div>
+        </div>
     </aside>
   );
 }
