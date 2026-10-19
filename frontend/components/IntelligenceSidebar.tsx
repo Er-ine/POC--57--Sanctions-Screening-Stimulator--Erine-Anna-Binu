@@ -16,8 +16,7 @@ interface IntelligenceSidebarProps {
   sourceError: string | null;
   sourcesLoading: boolean;
   onOpenQuickScreen?: () => void;
-  isExpanded: boolean;
-  onExpandedChange: (expanded: boolean) => void;
+  onClose: () => void;
 }
 
 export default function IntelligenceSidebar({
@@ -28,8 +27,7 @@ export default function IntelligenceSidebar({
   sourceError,
   sourcesLoading,
   onOpenQuickScreen,
-  isExpanded,
-  onExpandedChange,
+  onClose,
 }: IntelligenceSidebarProps) {
   const [activeTab, setActiveTab] = useState<"case" | "intelligence">(
     "intelligence"
@@ -79,58 +77,36 @@ export default function IntelligenceSidebar({
   };
 
   return (
-    <aside className="min-w-0 bg-zinc-900/70 backdrop-blur-md rounded-2xl border border-zinc-800 flex flex-col shadow-2xl">
+    <aside className="flex min-h-full min-w-0 flex-col bg-zinc-900/70">
       {/* Sidebar Header & Tab Navigation */}
       <div className="border-b border-zinc-800 bg-zinc-950/40">
-        <div className="flex items-center gap-3 p-4">
-          <button
-            type="button"
-            onClick={() => onExpandedChange(!isExpanded)}
-            aria-expanded={isExpanded}
-            aria-controls="intelligence-layer-content"
-            className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-          >
-            <span className="text-[11px] font-mono tracking-widest text-orange-400 uppercase font-semibold">
-              Intelligence Layer
-            </span>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              fill="none"
-              className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 motion-reduce:transition-none ${
-                isExpanded ? "rotate-180" : ""
-              }`}
+        <div className="flex items-center justify-between gap-3 p-4">
+          <div className="min-w-0">
+            <h2
+              id="intelligence-layer-title"
+              className="text-[11px] font-mono tracking-widest text-orange-400 uppercase font-semibold"
             >
-              <path
-                d="m5 7.5 5 5 5-5"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+              Intelligence Layer
+            </h2>
+          </div>
           <div className="flex shrink-0 items-center gap-2">
-            <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
-              {isExpanded ? "100% WIDTH" : "30% RAIL"}
-            </span>
             <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
               T:{threshold}%
             </span>
+            <button
+              type="button"
+              autoFocus
+              onClick={onClose}
+              aria-label="Close Intelligence Layer"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 text-zinc-300 transition-colors hover:border-zinc-500 hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+            >
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                <path d="m5 5 10 10M15 5 5 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div
-          id="intelligence-layer-content"
-          aria-hidden={!isExpanded}
-          inert={!isExpanded}
-          className={`grid transition-[grid-template-rows,opacity] duration-300 motion-reduce:transition-none ${
-            isExpanded
-              ? "grid-rows-[1fr] opacity-100"
-              : "grid-rows-[0fr] opacity-0"
-          }`}
-        >
-          <div className="min-h-0 overflow-hidden">
           <div className="px-4 pb-4">
             <div
               role="tablist"
@@ -387,8 +363,6 @@ export default function IntelligenceSidebar({
           </div>
         )}
             </div>
-          </div>
-          </div>
         </div>
 
       {/* Action Footer */}

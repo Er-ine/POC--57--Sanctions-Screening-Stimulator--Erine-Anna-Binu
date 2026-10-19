@@ -35,9 +35,57 @@ export default function Home() {
   const [selectedCase, setSelectedCase] = useState<ScreeningCase | null>(null);
   const [isQuickScreenOpen, setIsQuickScreenOpen] = useState<boolean>(false);
   const [isDeveloperInfoOpen, setIsDeveloperInfoOpen] = useState(false);
-  const [isIntelligenceExpanded, setIsIntelligenceExpanded] = useState(true);
+  const [isIntelligenceOpen, setIsIntelligenceOpen] = useState(false);
   const [reloadVersion, setReloadVersion] = useState(0);
   const developerInfoDialogRef = useRef<HTMLDialogElement>(null);
+  const intelligenceTriggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isIntelligenceOpen) return;
+
+    const trigger = intelligenceTriggerRef.current;
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsIntelligenceOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const panel = document.getElementById("intelligence-layer-dialog");
+      if (!panel) return;
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+      document.removeEventListener("keydown", handleKeyDown);
+      trigger?.focus();
+    };
+  }, [isIntelligenceOpen]);
   const closeDeveloperInfo = () => {
     developerInfoDialogRef.current?.close();
     setIsDeveloperInfoOpen(false);
@@ -209,7 +257,17 @@ export default function Home() {
                 Production-grade compliance screening against the official U.S. OFAC Specially Designated Nationals (SDN) sanctions dataset. Real-time RapidFuzz string distance, explainable match scoring, and review decision persistence.
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0 self-end">
+            <div className="flex flex-wrap items-center gap-3 shrink-0 self-end">
+              <button
+                ref={intelligenceTriggerRef}
+                type="button"
+                onClick={() => setIsIntelligenceOpen(true)}
+                aria-haspopup="dialog"
+                aria-controls="intelligence-layer-dialog"
+                className="py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                Intelligence Layer
+              </button>
               <button
                 type="button"
                 onClick={() => setIsQuickScreenOpen(true)}
@@ -271,32 +329,19 @@ export default function Home() {
           </div>
         )}
 
-        {/* 70/30 SPLIT ARCHITECTURE — Real Rails Master Manifesto Protocol */}
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-start">
-          {/* 70% MAIN STAGE */}
-          <section
-            className={`space-y-5 transition-[grid-column] duration-300 motion-reduce:transition-none ${
-              isIntelligenceExpanded ? "lg:col-span-10" : "lg:col-span-7"
-            }`}
-          >
+        {/* Full-width screening dashboard */}
+        <div className="grid grid-cols-1 gap-6 items-start">
+          <section className="min-w-0 space-y-5">
             {/* Control & Chart Row */}
-            <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
-              <div
-                className={`min-w-0 ${
-                  isIntelligenceExpanded ? "md:col-span-10" : "md:col-span-7"
-                }`}
-              >
+            <div className="grid grid-cols-1 gap-4">
+              <div className="min-w-0">
                 <MatchDistributionChart
                   cases={cases}
                   unavailable={Boolean(caseError)}
                   loading={loading}
                 />
               </div>
-              <div
-                className={`min-w-0 ${
-                  isIntelligenceExpanded ? "md:col-span-10" : "md:col-span-3"
-                }`}
-              >
+              <div className="min-w-0">
                 <ThresholdSlider
                   value={threshold}
                   onChange={handleThresholdChange}
@@ -337,27 +382,36 @@ export default function Home() {
             />
           </section>
 
-          {/* The Intelligence Layer occupies the full rail when expanded. */}
-          <div
-            className={`min-w-0 transition-[grid-column] duration-300 motion-reduce:transition-none ${
-              isIntelligenceExpanded
-                ? "lg:col-span-10"
-                : "lg:col-span-3 lg:sticky lg:top-6"
-            }`}
-          >
-            <IntelligenceSidebar
-              selectedCase={selectedCase}
-              onCaseUpdated={handleCaseUpdated}
-              threshold={threshold}
-              sources={sources}
-              sourceError={sourceError}
-              sourcesLoading={sourcesLoading}
-              onOpenQuickScreen={() => setIsQuickScreenOpen(true)}
-              isExpanded={isIntelligenceExpanded}
-              onExpandedChange={setIsIntelligenceExpanded}
-            />
-          </div>
         </div>
+
+        {isIntelligenceOpen && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <button
+              type="button"
+              aria-label="Dismiss Intelligence Layer"
+              onClick={() => setIsIntelligenceOpen(false)}
+              className="absolute inset-0 h-full w-full cursor-default bg-black/70 backdrop-blur-sm"
+            />
+            <div
+              id="intelligence-layer-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="intelligence-layer-title"
+              className="relative z-10 h-dvh w-full max-w-xl overflow-y-auto border-l border-zinc-700 bg-zinc-950 shadow-2xl"
+            >
+              <IntelligenceSidebar
+                selectedCase={selectedCase}
+                onCaseUpdated={handleCaseUpdated}
+                threshold={threshold}
+                sources={sources}
+                sourceError={sourceError}
+                sourcesLoading={sourcesLoading}
+                onOpenQuickScreen={() => setIsQuickScreenOpen(true)}
+                onClose={() => setIsIntelligenceOpen(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Ad-hoc Quick Screener Modal */}
