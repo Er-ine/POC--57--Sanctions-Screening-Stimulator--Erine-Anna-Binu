@@ -210,11 +210,9 @@ export default function IntelligenceSidebar({
                   </span>
                   <span
                     className={`inline-block rounded border px-2 py-0.5 font-mono text-xs font-medium uppercase ${
-                      selectedCase.status === "escalated"
+                        selectedCase.status === "escalated"
                         ? "border-red-900 bg-red-950/80 text-red-400"
-                        : selectedCase.status === "in_review"
-                          ? "border-amber-900 bg-amber-950/80 text-amber-400"
-                          : "border-emerald-900 bg-emerald-950/80 text-emerald-400"
+                        : "border-emerald-900 bg-emerald-950/80 text-emerald-400"
                     }`}
                   >
                     {selectedCase.status}
