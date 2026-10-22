@@ -1,4 +1,3 @@
-```tsx
 "use client";
 
 import React, { useState } from "react";
@@ -51,7 +50,7 @@ export default function IntelligenceSidebar({
     try {
       const res = await recordCaseDecision(selectedCase.id, {
         decision,
-        notes: reviewerNotes || `Reviewer action: ${decision}`,
+        notes: reviewerNotes || "Reviewer action: " + decision,
       });
 
       if (res.success) {
@@ -343,12 +342,11 @@ export default function IntelligenceSidebar({
                 <span>⚡ Why This Matters</span>
               </div>
               <p className="text-xs leading-relaxed text-zinc-300">
-                Financial institutions face strict liability under U.S. and
-                international sanctions regimes. Transacting with a blocked
-                party—even unknowingly—can carry severe regulatory penalties,
-                civil forfeitures, and loss of correspondent banking access.
-                Fuzzy screening catches deliberate obfuscation that exact-string
-                matching can miss.
+                Financial institutions face strict liability under applicable
+                sanctions regimes. Transacting with a blocked party can result
+                in serious regulatory consequences. Fuzzy screening can help
+                identify potential name variations that exact-string matching
+                may miss.
               </p>
             </div>
 
@@ -383,7 +381,7 @@ export default function IntelligenceSidebar({
                 <div className="flex items-start justify-between gap-3">
                   <span className="font-medium text-zinc-400">FATF</span>
                   <span className="text-right text-zinc-200">
-                    Recommendation 6 &amp; 7 (TF/PF)
+                    Recommendations 6 &amp; 7 (TF/PF)
                   </span>
                 </div>
               </div>
@@ -408,8 +406,8 @@ export default function IntelligenceSidebar({
                 </li>
                 <li>
                   <strong className="text-zinc-200">Score &lt; 70%:</strong>{" "}
-                  Assess under the institution&apos;s approved risk policy;
-                  a low fuzzy-match score alone does not establish clearance.
+                  Assess under the institution&apos;s approved risk policy; a
+                  low fuzzy-match score alone does not establish clearance.
                 </li>
               </ul>
             </div>
@@ -464,4 +462,3 @@ export default function IntelligenceSidebar({
     </aside>
   );
 }
-```
